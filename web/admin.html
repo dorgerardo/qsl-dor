@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QSL DOR · Panel de Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        :root {
+            --bg-body: #f5f7fa;
+            --bg-card: #ffffff;
+            --bg-nav: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --accent: #ffd966;
+            --accent-dark: #e6c35c;
+            --accent-text: #0b1a2f;
+            --card-border: #e2e8f0;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+            --warn-bg: #fef3c7;
+            --warn-text: #92400e;
+            --danger-bg: #fee2e2;
+            --danger-text: #991b1b;
+            --info-bg: #dbeafe;
+            --info-text: #1e3a8a;
+            --input-bg: #f8fafc;
+        }
+        html.dark {
+            --bg-body: #0b1a2f;
+            --bg-card: #142b44;
+            --bg-nav: #0f2035;
+            --text-primary: #e0e7f0;
+            --text-secondary: #b0c7db;
+            --text-muted: #8899aa;
+            --border-color: #1e3a5c;
+            --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --accent: #ffd966;
+            --accent-dark: #e6c35c;
+            --accent-text: #0b1a2f;
+            --card-border: #1e3a5c;
+            --success-bg: #0f3d2e;
+            --success-text: #6ee7b7;
+            --warn-bg: #3d2f0f;
+            --warn-text: #fbbf24;
+            --danger-bg: #3d1414;
+            --danger-text: #fca5a5;
+            --info-bg: #172554;
+            --info-text: #93c5fd;
+            --input-bg: #0f2035;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ========== LAYOUT GENERAL: SIDEBAR + CONTENIDO ========== */
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px;
+            background: var(--bg-nav);
+            border-right: 1px solid var(--border-color);
+            padding: 20px 0;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 20px 20px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+        .sidebar-logo img { height: 38px; }
+        .sidebar-badge {
+            margin: 0 20px 20px;
+            background: var(--danger-bg);
+            color: var(--danger-text);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+        .sidebar-nav button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: 0.15s;
+            width: 100%;
+            position: relative;
+        }
+        .sidebar-nav button:hover { background: var(--input-bg); color: var(--text-primary); }
+        .sidebar-nav button.active {
+            background: var(--accent);
+            color: var(--accent-text);
+        }
+        .sidebar-nav button i { width: 18px; text-align: center; }
+        .sidebar-nav button .contador-badge {
+            margin-left: auto;
+            background: var(--danger-bg);
+            color: var(--danger-text);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .sidebar-nav button.active .contador-badge {
+            background: rgba(11,26,47,0.2);
+            color: var(--accent-text);
+        }
+        .sidebar-footer {
+            padding: 15px 20px 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: 15px;
+        }
+        .sidebar-footer a {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sidebar-footer a:hover { color: var(--accent); }
+
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            flex: 1;
+            padding: 30px 35px;
+            max-width: 1100px;
+        }
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .content-header h1 {
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .content-header h1 i { color: var(--accent); }
+        .content-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+
+        #themeToggle {
+            background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 50%;
+            width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; transition: 0.2s; color: var(--text-primary);
+        }
+        #themeToggle:hover { border-color: var(--accent); transform: scale(1.05); }
+
+        .btn-solid {
+            background: var(--accent); padding: 8px 20px; border-radius: 10px;
+            color: var(--accent-text) !important; font-weight: 600; transition: 0.2s;
+            border: none; cursor: pointer; font-size: 0.85rem;
+        }
+        .btn-solid:hover { background: var(--accent-dark); }
+        .btn-outline {
+            border: 1px solid var(--border-color); padding: 7px 16px; border-radius: 10px;
+            color: var(--text-secondary) !important; font-weight: 600; transition: 0.2s;
+            background: var(--bg-card); cursor: pointer; font-size: 0.85rem;
+        }
+        .btn-outline:hover { border-color: var(--accent); color: var(--accent-dark) !important; }
+        .btn-danger {
+            border: 1px solid var(--danger-text); padding: 7px 16px; border-radius: 10px;
+            color: var(--danger-text) !important; font-weight: 600; transition: 0.2s;
+            background: var(--danger-bg); cursor: pointer; font-size: 0.85rem;
+        }
+        .btn-success {
+            border: none; padding: 7px 16px; border-radius: 10px;
+            color: var(--success-text) !important; font-weight: 700; transition: 0.2s;
+            background: var(--success-bg); cursor: pointer; font-size: 0.85rem;
+        }
+
+        /* SECCIONES (paneles que se muestran/ocultan) */
+        .panel-seccion { display: none; }
+        .panel-seccion.active { display: block; }
+
+        /* TARJETA GENÉRICA */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 20px 22px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+        }
+
+        /* SOLICITUDES */
+        .solicitud-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .solicitud-info { flex: 1; min-width: 260px; }
+        .solicitud-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .solicitud-motivo {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .solicitud-motivo.evento { background: var(--info-bg); color: var(--info-text); }
+        .solicitud-motivo.publicidad { background: var(--warn-bg); color: var(--warn-text); }
+        .solicitud-motivo.reporte { background: var(--danger-bg); color: var(--danger-text); }
+        .solicitud-motivo.otro { background: var(--border-color); color: var(--text-secondary); }
+        .solicitud-info strong { font-size: 0.98rem; }
+        .solicitud-info .fecha { color: var(--text-muted); font-size: 0.78rem; }
+        .solicitud-mensaje { color: var(--text-secondary); font-size: 0.9rem; margin-top: 6px; }
+        .solicitud-contacto {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            display: flex;
+            gap: 14px;
+        }
+        .solicitud-acciones { display: flex; gap: 8px; flex-shrink: 0; }
+
+        /* NOVEDADES DE LA COMUNIDAD */
+        .novedad-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .novedad-item:last-child { border-bottom: none; }
+        .novedad-icono {
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; font-size: 0.9rem;
+        }
+        .novedad-icono.expulsion { background: var(--danger-bg); color: var(--danger-text); }
+        .novedad-icono.sucesion { background: var(--warn-bg); color: var(--warn-text); }
+        .novedad-icono.salida { background: var(--border-color); color: var(--text-secondary); }
+        .novedad-texto { flex: 1; font-size: 0.9rem; }
+        .novedad-texto .fecha { color: var(--text-muted); font-size: 0.78rem; display: block; margin-top: 2px; }
+
+        /* MEDALLAS ESPECIALES - FORM */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+        .form-grupo label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+        .form-grupo select, .form-grupo input, .form-grupo textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 0.88rem;
+            font-family: inherit;
+        }
+
+        /* PARÁMETROS CONFIGURABLES */
+        .parametro-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border-color);
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .parametro-row:last-child { border-bottom: none; }
+        .parametro-info strong { font-size: 0.92rem; display: block; }
+        .parametro-info span { font-size: 0.8rem; color: var(--text-muted); }
+        .parametro-control { display: flex; align-items: center; gap: 8px; }
+        .parametro-control input {
+            width: 70px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .parametro-control span { color: var(--text-muted); font-size: 0.85rem; }
+
+        /* USUARIOS - BUSCADOR Y FICHA */
+        .buscador-usuario {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .buscador-usuario input {
+            flex: 1;
+            padding: 11px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 0.92rem;
+        }
+        .ficha-usuario {
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .ficha-avatar {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: var(--accent); color: var(--accent-text);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.2rem; flex-shrink: 0;
+        }
+        .ficha-datos { flex: 1; min-width: 220px; }
+        .ficha-datos h3 { font-size: 1.1rem; }
+        .ficha-datos .meta-linea { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+        .ficha-datos .meta-linea strong { color: var(--text-primary); }
+        .ficha-acciones { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+        .cooldown-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--warn-bg); color: var(--warn-text);
+            padding: 4px 12px; border-radius: 14px; font-size: 0.78rem; font-weight: 700;
+            margin-top: 8px;
+        }
+
+        /* BANDEJA DE SOPORTE (tickets ya resueltos) */
+        .tabla-tickets { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+        .tabla-tickets th {
+            text-align: left;
+            padding: 10px 12px;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tabla-tickets td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tabla-tickets tr:last-child td { border-bottom: none; }
+        .estado-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 10px;
+        }
+        .estado-tag.resuelto { background: var(--success-bg); color: var(--success-text); }
+        .estado-tag.pendiente { background: var(--warn-bg); color: var(--warn-text); }
+
+        .section-subheader {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 25px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-subheader i { color: var(--accent); }
+
+        @media (max-width: 900px) {
+            .app-layout { flex-direction: column; }
+            .sidebar { width: 100%; }
+            .sidebar-nav { flex-direction: row; overflow-x: auto; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-layout">
+
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="statics/logo_qsl_dor.png" alt="QSL DOR" />
+            QSL DOR
+        </div>
+        <div class="sidebar-badge"><i class="fas fa-user-shield"></i> Panel de Administrador</div>
+        <nav class="sidebar-nav" id="sidebarNav">
+            <button class="active" data-panel="solicitudes"><i class="fas fa-inbox"></i> Solicitudes <span class="contador-badge">5</span></button>
+            <button data-panel="novedades"><i class="fas fa-triangle-exclamation"></i> Novedades de clanes</button>
+            <button data-panel="medallas"><i class="fas fa-medal"></i> Medallas especiales</button>
+            <button data-panel="parametros"><i class="fas fa-sliders"></i> Parámetros</button>
+            <button data-panel="usuarios"><i class="fas fa-users"></i> Usuarios</button>
+            <button data-panel="moderadores"><i class="fas fa-user-shield"></i> Moderadores</button>
+            <button data-panel="soporte"><i class="fas fa-headset"></i> Bandeja de soporte</button>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="index.html"><i class="fas fa-arrow-left"></i> Volver al sitio</a>
+        </div>
+    </aside>
+
+    <!-- ========== CONTENIDO PRINCIPAL ========== -->
+    <main class="main-content">
+
+        <!-- ===== PANEL: SOLICITUDES PENDIENTES ===== -->
+        <section class="panel-seccion active" id="panel-solicitudes">
+            <div class="content-header">
+                <div>
+                    <h1><i class="fas fa-inbox"></i> Solicitudes pendientes</h1>
+                    <p>Pedidos de eventos, publicidad y reportes enviados desde la web.</p>
+                </div>
+                <button id="themeToggle" aria-label="Cambiar tema">🌙</button>
+            </div>
+
+            <div class="card">
+                <div class="solicitud-item">
+                    <div class="solicitud-info">
+                        <div class="solicitud-header">
+                            <span class="solicitud-motivo evento">Evento</span>
+                            <strong>LW3AND</strong>
+                            <span class="fecha">· hace 2 días</span>
+                        </div>
+                        <div class="solicitud-mensaje">"Quiero organizar una ronda de Peanut/EchoLink el 01/08 a las 20:00 UTC para que la gente busque la medalla Puente entre Mundos."</div>
+                        <div class="solicitud-contacto">
+                            <span><i class="fas fa-envelope"></i> lw3and@mail.com</span>
+                            <span><i class="fab fa-whatsapp"></i> +54 9 11 5555-1234</span>
+                        </div>
+                    </div>
+                    <div class="solicitud-acciones">
+                        <button class="btn-outline"><i class="fas fa-reply"></i> Responder</button>
+                        <button class="btn-success"><i class="fas fa-check"></i> Aprobar</button>
+                        <button class="btn-outline"><i class="fas fa-clock"></i> En proceso</button>
+                        <button class="btn-danger"><i class="fas fa-xmark"></i> Rechazar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="solicitud-item">
+                    <div class="solicitud-info">
+                        <div class="solicitud-header">
+                            <span class="solicitud-motivo reporte">Reporte</span>
+                            <strong>PY2XYZ</strong>
+                            <span class="fecha">· hace 5 horas</span>
+                        </div>
+                        <div class="solicitud-mensaje">"El usuario EA4NOC me contactó por WhatsApp con un tono inapropiado después de confirmar el match. Adjunto capturas."</div>
+                        <div class="solicitud-contacto">
+                            <span><i class="fas fa-envelope"></i> py2xyz@mail.com</span>
+                        </div>
+                    </div>
+                    <div class="solicitud-acciones">
+                        <button class="btn-outline"><i class="fas fa-reply"></i> Responder</button>
+                        <button class="btn-success"><i class="fas fa-check"></i> Aprobar</button>
+                        <button class="btn-outline"><i class="fas fa-clock"></i> En proceso</button>
+                        <button class="btn-danger"><i class="fas fa-xmark"></i> Rechazar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="solicitud-item">
+                    <div class="solicitud-info">
+                        <div class="solicitud-header">
+                            <span class="solicitud-motivo publicidad">Publicidad</span>
+                            <strong>LU9NOC</strong>
+                            <span class="fecha">· hace 1 día</span>
+                        </div>
+                        <div class="solicitud-mensaje">"Quisiera publicar un banner avisando sobre el curso de licencia de radioaficionado que dicta nuestro radioclub este mes."</div>
+                        <div class="solicitud-contacto">
+                            <span><i class="fab fa-whatsapp"></i> +54 9 3725 111-222</span>
+                        </div>
+                    </div>
+                    <div class="solicitud-acciones">
+                        <button class="btn-outline"><i class="fas fa-reply"></i> Responder</button>
+                        <button class="btn-success"><i class="fas fa-check"></i> Aprobar</button>
+                        <button class="btn-outline"><i class="fas fa-clock"></i> En proceso</button>
+                        <button class="btn-danger"><i class="fas fa-xmark"></i> Rechazar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="solicitud-item">
+                    <div class="solicitud-info">
+                        <div class="solicitud-header">
+                            <span class="solicitud-motivo otro">Otro</span>
+                            <strong>LU8FEN</strong>
+                            <span class="fecha">· hace 3 días</span>
+                        </div>
+                        <div class="solicitud-mensaje">"Me expulsaron de mi clan por un mal entendido con el Cacique, ya lo hablamos y quiere que vuelva. ¿Pueden liberarme el cooldown?"</div>
+                        <div class="solicitud-contacto">
+                            <span><i class="fas fa-envelope"></i> lu8fen@mail.com</span>
+                        </div>
+                    </div>
+                    <div class="solicitud-acciones">
+                        <button class="btn-outline"><i class="fas fa-reply"></i> Responder</button>
+                        <button class="btn-success"><i class="fas fa-check"></i> Aprobar</button>
+                        <button class="btn-outline"><i class="fas fa-clock"></i> En proceso</button>
+                        <button class="btn-danger"><i class="fas fa-xmark"></i> Rechazar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="solicitud-item">
+                    <div class="solicitud-info">
+                        <div class="solicitud-header">
+                            <span class="solicitud-motivo evento">Evento</span>
+                            <strong>CE3AND</strong>
+                            <span class="fecha">· hace 4 días</span>
+                        </div>
+                        <div class="solicitud-mensaje">"Encuentro DX en 20m FT8 para el 26/07 a las 18:00 UTC, abierto a toda la comunidad."</div>
+                        <div class="solicitud-contacto">
+                            <span><i class="fas fa-envelope"></i> ce3and@mail.com</span>
+                        </div>
+                    </div>
+                    <div class="solicitud-acciones">
+                        <button class="btn-outline"><i class="fas fa-reply"></i> Responder</button>
+                        <button class="btn-success"><i class="fas fa-check"></i> Aprobar</button>
+                        <button class="btn-outline"><i class="fas fa-clock"></i> En proceso</button>
+                        <button class="btn-danger"><i class="fas fa-xmark"></i> Rechazar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PANEL: NOVEDADES DE CLANES ===== -->
+        <section class="panel-seccion" id="panel-novedades">
+            <div class="content-header">
+                <div>
+                    <h1><i class="fas fa-triangle-exclamation"></i> Novedades de clanes</h1>
+                    <p>Historial de expulsiones, salidas y cambios de Cacique. Útil para tener contexto ante pedidos de liberación de cooldown.</p>
+                </div>
+                <button id="themeToggle2" aria-label="Cambiar tema">🌙</button>
+            </div>
+
+            <div class="card">
+                <div class="novedad-item">
+                    <div class="novedad-icono expulsion"><i class="fas fa-user-slash"></i></div>
+                    <div class="novedad-texto">
+                        <strong>LU8FEN</strong> fue expulsado del clan <strong>Los 40m</strong> por el Cacique LW3AND.
+                        <span class="fecha">06/06/2026 · Cooldown activo hasta el 06/07/2026</span>
+                    </div>
+                </div>
+                <div class="novedad-item">
+                    <div class="novedad-icono sucesion"><i class="fas fa-crown"></i></div>
+                    <div class="novedad-texto">
+                        El clan <strong>La Legión del DX</strong> transfirió el mando de Cacique a <strong>CE3AND</strong> por inactividad del Cacique anterior (LU1ABC), quien no respondió solicitudes de ingreso durante 5 días.
+                        <span class="fecha">28/06/2026</span>
+                    </div>
+                </div>
+                <div class="novedad-item">
+                    <div class="novedad-icono salida"><i class="fas fa-door-open"></i></div>
+                    <div class="novedad-texto">
+                        <strong>PY2XYZ</strong> abandonó voluntariamente el clan <strong>La Noche</strong>.
+                        <span class="fecha">02/07/2026 · Cooldown activo hasta el 01/08/2026</span>
+                    </div>
+                </div>
+                <div class="novedad-item">
+                    <div class="novedad-icono expulsion"><i class="fas fa-user-slash"></i></div>
+                    <div class="novedad-texto">
+                        El Cacique de <strong>Los Conquistadores</strong> disolvió el clan completo (10 miembros liberados sin cooldown, por decisión del Cacique).
+                        <span class="fecha">30/06/2026</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PANEL: MEDALLAS ESPECIALES ===== -->
+        <section class="panel-seccion" id="panel-medallas">
+            <div class="content-header">
+                <div>
+                    <h1><i class="fas fa-medal"></i> Otorgar medalla especial</h1>
+                    <p>Las medallas del tipo "Especial" (Leyenda de QSL DOR, Pionero del Éter, Embajador de la Comunidad) se asignan manualmente.</p>
+                </div>
+                <button id="themeToggle3" aria-label="Cambiar tema">🌙</button>
+            </div>
+
+            <div class="card">
+                <form id="formMedalla">
+                    <div class="form-row">
+                        <div class="form-grupo">
+                            <label>Otorgar a</label>
+                            <select>
+                                <option>Usuario individual</option>
+                                <option>Clan</option>
+                            </select>
+                        </div>
+                        <div class="form-grupo">
+                            <label>Callsign o nombre de clan</label>
+                            <input type="text" placeholder="Ej: LU5REY o La Hermandad del Éter" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-grupo">
+                            <label>Medalla a otorgar</label>
+                            <select>
+                                <option>🎖️ Leyenda de QSL DOR</option>
+                                <option>🏅 Pionero del Éter</option>
+                                <option>🤝 Embajador de la Comunidad</option>
+                            </select>
+                        </div>
+                        <div class="form-grupo">
+                            <label>Fecha</label>
+                            <input type="date" />
+                        </div>
+                    </div>
+                    <div class="form-grupo" style="margin-bottom: 16px;">
+                        <label>Motivo (se mostrará en el perfil público)</label>
+                        <textarea rows="3" placeholder="Ej: Primer operador en alcanzar 100 países confirmados en la plataforma."></textarea>
+                    </div>
+                    <button type="submit" class="btn-solid"><i class="fas fa-medal"></i> Otorgar medalla</button>
+                </form>
+            </div>
+
+            <div class="section-subheader"><i class="fas fa-clock-rotate-left"></i> Últimas otorgadas</div>
+            <div class="card">
+                <table class="tabla-tickets">
+                    <tr><th>Destinatario</th><th>Medalla</th><th>Motivo</th><th>Fecha</th></tr>
+                    <tr><td>LU5REY</td><td>🏅 Pionero del Éter</td><td>Primer Cacique en fundar un clan</td><td>15/03/2026</td></tr>
+                    <tr><td>Clan Los 40m</td><td>🤝 Embajador de la Comunidad</td><td>Organizaron 5 eventos públicos exitosos</td><td>10/06/2026</td></tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- ===== PANEL: PARÁMETROS CONFIGURABLES ===== -->
+        <section class="panel-seccion" id="panel-parametros">
+            <div class="content-header">
+                <div>
+                    <h1><i class="fas fa-sliders"></i> Parámetros del sistema</h1>
+                    <p>Ajustá las reglas globales de matching y clanes sin tocar código.</p>
+                </div>
+                <button id="themeToggle4" aria-label="Cambiar tema">🌙</button>
+            </div>
+
+            <div class="card">
+                <div class="parametro-row">
+                    <div class="parametro-info">
+                        <strong>Tolerancia de hora para matching</strong>
+                        <span>Diferencia máxima aceptada entre la hora que cargó cada operador para el mismo QSO.</span>
+                    </div>
+                    <div class="parametro-control">
+                        <input type="number" value="15" />
+                        <span>minutos</span>
+                    </div>
+                </div>
+                <div class="parametro-row">
+                    <div class="parametro-info">
+                        <strong>Días de espera por Cacique inactivo</strong>
+                        <span>Tiempo sin respuesta antes de intervenir y evaluar la sucesión.</span>
+                    </div>
+                    <div class="parametro-control">
+                        <input type="number" value="5" />
+                        <span>días</span>
+                    </div>
+                </div>
+                <div class="parametro-row">
+                    <div class="parametro-info">
+                        <strong>Cooldown tras salida/expulsión de clan</strong>
+                        <span>Tiempo que debe esperar un usuario antes de unirse a otro clan o crear uno nuevo.</span>
+                    </div>
+                    <div class="parametro-control">
+                        <input type="number" value="30" />
+                        <span>días</span>
+                    </div>
+                </div>
+                <div class="parametro-row">
+                    <div class="parametro-info">
+                        <strong>Máximo de miembros por clan</strong>
+                        <span>Tope de integrantes que puede tener un clan simultáneamente.</span>
+                    </div>
+                    <div class="parametro-control">
+                        <input type="number" value="10" />
+                        <span>miembros</span>
+                    </div>
+                </div>
+                <div style="margin-top: 18px;">
+                    <button class="btn-solid"><i class="fas fa-floppy-disk"></i> Guardar cambios</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PANEL: GESTIÓN DE USUARIOS ===== -->
+        <section class="panel-seccion" id="panel-usuarios">
+            <div class="content-header">
+                <div>
+                    <h1><i class="fas fa-users"></i> Gestión de usuarios</h1>
+                    <p>Buscá por indicativo para ver la ficha completa, liberar cooldowns o suspender cuentas.</p>
+                </div>
+                <button id="themeToggle5" aria-label="Cambiar tema">🌙</button>
+            </div>
+
+            <div class="buscador-usuario">
+                <input type="text" placeholder="Buscar por indicativo (ej: LU8FEN)..." value="LU8FEN" />
+                <button class="btn-solid"><i class="fas fa-magnifying-glass"></i> Buscar</button>
+            </div>
+
+            <div class="card">
+                <div class="ficha-usuario">
+                    <div class="ficha-avatar">LU</div>
+                    <div class="ficha-datos">
+                        <h3>LU8FEN</h3>
+                        <div class="meta-linea">Miembro desde: <strong>enero 2026</strong> · Ingresos: <strong>62</strong></div>
+                        <div class="meta-linea">Clan actual: <strong>Sin clan</strong></div>
+                        <div class="meta-linea">Medallas: <strong>11</strong> · Contactos confirmados: <strong>58</strong></div>
+                        <span class="cooldown-tag"><i class="fas fa-hourglass-half"></i> Cooldown activo hasta el 06/07/2026</span>
+                        <div class="ficha-acciones">
+                            <button class="btn-success"><i class="fas fa-unlock"></i> Liberar cooldown</button>
+                            <button class="btn-outline"><i class="fas fa-envelope"></i> Ver mail</button>
+                            <button class="btn-danger"><i class="fas fa-ban"></i> Suspender cuenta</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PANEL: MODERADORES ===== -->
+        <section class="panel-seccion" id="panel-moderadores">
+            <div class="content-header">
+                <div>
+                    <h1><i class="fas fa-user-shield"></i> Moderadores</h1>
+                    <p>Solo el Admin principal puede dar de alta o baja moderadores. Alcanza con escribir el indicativo del operador.</p>
+                </div>
+                <button id="themeToggle7" aria-label="Cambiar tema">🌙</button>
+            </div>
+
+            <div class="card">
+                <form id="formModerador" style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+                    <div class="form-grupo" style="flex:1; min-width:220px; margin-bottom:0;">
+                        <label>Indicativo del nuevo moderador</label>
+                        <input type="text" placeholder="Ej: LW7DXX" />
+                    </div>
+                    <button type="submit" class="btn-solid"><i class="fas fa-user-plus"></i> Agregar como moderador</button>
+                </form>
+            </div>
+
+            <div class="section-subheader"><i class="fas fa-users-gear"></i> Moderadores activos</div>
+            <div class="card">
+                <table class="tabla-tickets">
+                    <tr><th>Indicativo</th><th>Agregado el</th><th>Acción</th></tr>
+                    <tr>
+                        <td>LW7DXX</td>
+                        <td>02/05/2026</td>
+                        <td><button class="btn-danger"><i class="fas fa-user-minus"></i> Quitar</button></td>
+                    </tr>
+                    <tr>
+                        <td>CE3AND</td>
+                        <td>18/05/2026</td>
+                        <td><button class="btn-danger"><i class="fas fa-user-minus"></i> Quitar</button></td>
+                    </tr>
+                    <tr>
+                        <td>EA4NOC</td>
+                        <td>03/06/2026</td>
+                        <td><button class="btn-danger"><i class="fas fa-user-minus"></i> Quitar</button></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="section-subheader"><i class="fas fa-circle-info"></i> Qué puede ver un moderador</div>
+            <div class="card">
+                <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.6;">
+                    Los moderadores acceden a <strong>Solicitudes</strong>, <strong>Novedades de clanes</strong> y la <strong>Bandeja de soporte</strong>.
+                    No tienen acceso a Medallas especiales, Parámetros del sistema, suspensión de cuentas ni a esta sección de Moderadores —
+                    esas decisiones quedan reservadas al Admin principal.
+                </p>
+            </div>
+        </section>
+
+        <!-- ===== PANEL: BANDEJA DE SOPORTE ===== -->
+        <section class="panel-seccion" id="panel-soporte">
+            <div class="content-header">
+                <div>
+                    <h1><i class="fas fa-headset"></i> Bandeja de soporte</h1>
+                    <p>Historial de todas las solicitudes, ya resueltas o rechazadas, para trazabilidad.</p>
+                </div>
+                <button id="themeToggle6" aria-label="Cambiar tema">🌙</button>
+            </div>
+
+            <div class="card">
+                <table class="tabla-tickets">
+                    <tr><th>Usuario</th><th>Motivo</th><th>Resumen</th><th>Estado</th><th>Fecha</th></tr>
+                    <tr>
+                        <td>LW7DXX</td>
+                        <td>Reporte</td>
+                        <td>Fecha de QSO mal cargada</td>
+                        <td><span class="estado-tag resuelto">Resuelto</span></td>
+                        <td>28/06/2026</td>
+                    </tr>
+                    <tr>
+                        <td>EA4NOC</td>
+                        <td>Evento</td>
+                        <td>Activación especial 10m</td>
+                        <td><span class="estado-tag resuelto">Resuelto</span></td>
+                        <td>20/06/2026</td>
+                    </tr>
+                    <tr>
+                        <td>LU2COND</td>
+                        <td>Otro</td>
+                        <td>Consulta sobre medalla de constancia</td>
+                        <td><span class="estado-tag pendiente">Pendiente</span></td>
+                        <td>03/07/2026</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    // TEMA OSCURO/CLARO (aplica a todos los toggles, uno por panel)
+    (function() {
+        const html = document.documentElement;
+        const temaGuardado = localStorage.getItem('tema') || 'light';
+        html.classList.add(temaGuardado);
+        function actualizarIconos(tema) {
+            document.querySelectorAll('[id^="themeToggle"]').forEach(btn => {
+                btn.textContent = tema === 'dark' ? '☀️' : '🌙';
+            });
+        }
+        actualizarIconos(temaGuardado);
+        document.querySelectorAll('[id^="themeToggle"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const esOscuro = html.classList.contains('dark');
+                const nuevoTema = esOscuro ? 'light' : 'dark';
+                html.classList.remove('light', 'dark');
+                html.classList.add(nuevoTema);
+                localStorage.setItem('tema', nuevoTema);
+                actualizarIconos(nuevoTema);
+            });
+        });
+    })();
+
+    // NAVEGACIÓN ENTRE PANELES (sidebar)
+    document.querySelectorAll('.sidebar-nav button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.sidebar-nav button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const panelId = 'panel-' + this.dataset.panel;
+            document.querySelectorAll('.panel-seccion').forEach(p => p.classList.remove('active'));
+            document.getElementById(panelId).classList.add('active');
+        });
+    });
+
+    // FORM DE MEDALLA (simulado)
+    document.getElementById('formMedalla').addEventListener('submit', function(e) {
+        e.preventDefault();
+        // TODO backend: POST a /api/admin/medallas/otorgar
+        alert('Medalla otorgada (simulado). Acá se conectaría con el backend real.');
+    });
+</script>
+
+</body>
+</html>

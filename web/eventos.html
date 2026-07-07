@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QSL DOR · Eventos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        :root {
+            --bg-body: #f5f7fa;
+            --bg-card: #ffffff;
+            --bg-nav: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --accent: #ffd966;
+            --accent-dark: #e6c35c;
+            --accent-text: #0b1a2f;
+            --card-border: #e2e8f0;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+            --input-bg: #f8fafc;
+        }
+        html.dark {
+            --bg-body: #0b1a2f;
+            --bg-card: #142b44;
+            --bg-nav: #0f2035;
+            --text-primary: #e0e7f0;
+            --text-secondary: #b0c7db;
+            --text-muted: #8899aa;
+            --border-color: #1e3a5c;
+            --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --accent: #ffd966;
+            --accent-dark: #e6c35c;
+            --accent-text: #0b1a2f;
+            --card-border: #1e3a5c;
+            --success-bg: #0f3d2e;
+            --success-text: #6ee7b7;
+            --input-bg: #0f2035;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            padding: 0 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 0; border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap; gap: 15px; background: var(--bg-nav);
+        }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 2.2rem; font-weight: 700; color: var(--accent); text-decoration: none; }
+        .logo img { height: 55px; }
+        .nav-links { display: flex; gap: 25px; align-items: center; flex-wrap: wrap; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-weight: 500; transition: 0.2s; }
+        .nav-links a:hover { color: var(--accent); }
+        .nav-links a.active { color: var(--accent); font-weight: 600; }
+        #themeToggle {
+            background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 50%;
+            width: 40px; height: 40px; font-size: 1.3rem; cursor: pointer; transition: 0.2s; color: var(--text-primary);
+        }
+        #themeToggle:hover { border-color: var(--accent); transform: scale(1.05); }
+        .btn-outline {
+            border: 2px solid var(--accent); padding: 8px 20px; border-radius: 30px;
+            color: var(--accent) !important; font-weight: 600; transition: 0.2s;
+            background: transparent; cursor: pointer; font-size: 0.9rem;
+        }
+        .btn-outline:hover { background: var(--accent); color: var(--accent-text) !important; }
+        .btn-solid {
+            background: var(--accent); padding: 8px 22px; border-radius: 30px;
+            color: var(--accent-text) !important; font-weight: 600; transition: 0.2s;
+            border: none; cursor: pointer; font-size: 0.9rem;
+        }
+        .btn-solid:hover { background: var(--accent-dark); }
+        .btn-solid.small { padding: 8px 18px; font-size: 0.85rem; }
+
+        /* HEADER */
+        .eventos-header {
+            text-align: center;
+            padding: 40px 0 10px;
+        }
+        .eventos-header h1 { font-size: 2.4rem; }
+        .eventos-header h1 i { color: var(--accent); margin-right: 10px; }
+        .eventos-header p { color: var(--text-secondary); font-size: 1.05rem; max-width: 600px; margin: 10px auto 20px; }
+
+        /* BARRA DE ACCIONES Y FILTROS */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 25px 0 30px;
+        }
+        .filtros-chips { display: flex; gap: 10px; flex-wrap: wrap; }
+        .filtro-chip {
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .filtro-chip:hover { border-color: var(--accent); }
+        .filtro-chip.active { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+
+        /* LISTA DE EVENTOS */
+        .eventos-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .evento-card {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 22px 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            transition: 0.2s;
+        }
+        .evento-card:hover { transform: translateY(-2px); }
+        .evento-card.pasado { opacity: 0.6; }
+        .evento-info { flex: 1; min-width: 260px; }
+        .evento-titulo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .evento-titulo i { color: var(--accent); }
+        .evento-meta {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .evento-meta span:not(:last-child)::after {
+            content: "·";
+            margin: 0 6px;
+            color: var(--text-muted);
+        }
+        .evento-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+        .evento-tags {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .tags-fila { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .tag.publico { background: var(--success-bg); color: var(--success-text); }
+        .tag.privado { background: var(--border-color); color: var(--text-secondary); }
+        .tag.confirmados { background: var(--accent); color: var(--accent-text); }
+        .evento-organiza {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .evento-organiza strong { color: var(--text-secondary); }
+
+        /* CTA PEDIR EVENTO */
+        .cta-pedir {
+            text-align: center;
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px 25px;
+            box-shadow: var(--shadow);
+            margin: 50px 0 30px;
+        }
+        .cta-pedir h2 { font-size: 1.5rem; margin-bottom: 10px; }
+        .cta-pedir p { color: var(--text-secondary); max-width: 480px; margin: 0 auto 20px; font-size: 0.95rem; }
+
+        .footer {
+            text-align: center; padding: 40px 0 20px; border-top: 1px solid var(--border-color);
+            color: var(--text-muted); font-size: 0.9rem; margin-top: 20px;
+        }
+        .footer .footer-logos { display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 15px; }
+        .footer .footer-logos img { height: 40px; }
+        .footer a { color: var(--text-muted); text-decoration: none; }
+        .footer a:hover { color: var(--accent); }
+        .footer .footer-contact { margin: 10px 0; }
+        .footer .footer-contact a { color: var(--accent); font-weight: 600; }
+
+        @media (max-width: 700px) {
+            .evento-card { flex-direction: column; align-items: flex-start; }
+            .evento-tags { align-items: flex-start; }
+            .tags-fila { justify-content: flex-start; }
+        }
+    
+        /* ========== MODAL INGRESAR / REGISTRARSE ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.visible { display: flex; }
+        .modal-box {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+            position: relative;
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-close {
+            position: absolute;
+            top: 16px; right: 18px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-close:hover { color: var(--text-primary); }
+        .modal-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        .modal-tabs {
+            display: flex;
+            background: var(--input-bg, var(--bg-body));
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 22px;
+        }
+        .modal-tab {
+            flex: 1;
+            text-align: center;
+            padding: 9px 0;
+            border-radius: 9px;
+            border: none;
+            background: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-tab.active { background: var(--accent); color: var(--accent-text); }
+        .modal-panel { display: none; }
+        .modal-panel.active { display: block; }
+        .modal-grupo { margin-bottom: 14px; }
+        .modal-grupo label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+        .modal-grupo input {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg, var(--bg-body));
+            color: var(--text-primary);
+            font-size: 0.92rem;
+        }
+        .modal-grupo input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+        .modal-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+        .modal-check input { margin-top: 3px; flex-shrink: 0; }
+        .modal-check a { color: var(--accent-dark); }
+        html.dark .modal-check a { color: var(--accent); }
+        .modal-olvide {
+            text-align: right;
+            margin: -8px 0 18px;
+        }
+        .modal-olvide a {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+        .modal-olvide a:hover { color: var(--accent-dark); }
+        .modal-submit {
+            width: 100%;
+            padding: 13px 0;
+            border-radius: 12px;
+            border: none;
+            background: var(--accent);
+            color: var(--accent-text);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-submit:hover { background: var(--accent-dark); }
+        .modal-status {
+            display: none;
+            margin-top: 14px;
+            padding: 11px 14px;
+            background: var(--success-bg, #d1fae5);
+            color: var(--success-text, #065f46);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .modal-status.visible { display: block; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <img src="statics/logo_qsl_dor.png" alt="QSL DOR" />
+            QSL DOR
+        </a>
+        <div class="nav-links">
+            <a href="index.html">🏠 Inicio</a>
+            <a href="panel.html">🗂️ Mi Panel</a>
+            <a href="eventos.html" class="active">📅 Eventos</a>
+            <a href="museo.html">🏛️ Museo</a>
+            <a href="app.html">📲 QSL App</a>
+            <a href="ayuda.html">🆘 Ayuda</a>
+            <button id="themeToggle" aria-label="Cambiar tema">🌙</button>
+            <button class="btn-outline"><i class="fas fa-user"></i> Ingresar</button>
+            <button class="btn-solid"><i class="fas fa-user-plus"></i> Registrarse</button>
+        </div>
+    </nav>
+
+    <!-- HEADER -->
+    <div class="eventos-header">
+        <h1><i class="fas fa-calendar-days"></i> Cartelera de Eventos</h1>
+        <p>Activaciones, concursos y encuentros organizados por operadores y clanes de la comunidad. Los avisos llegan 7 días antes a quienes confirmen asistencia.</p>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+        <div class="filtros-chips" id="filtrosChips">
+            <button class="filtro-chip active" data-filtro="todos">Todos</button>
+            <button class="filtro-chip" data-filtro="publico">🔓 Públicos</button>
+            <button class="filtro-chip" data-filtro="privado">🔒 Solo mi clan</button>
+            <button class="filtro-chip" data-filtro="pasado">Pasados</button>
+        </div>
+        <button class="btn-solid small"><i class="fas fa-plus"></i> Pedir un evento</button>
+    </div>
+
+    <!-- LISTA DE EVENTOS -->
+    <div class="eventos-lista" id="eventosLista">
+
+        <div class="evento-card" data-tipo="publico">
+            <div class="evento-info">
+                <div class="evento-titulo"><i class="fas fa-bullhorn"></i> Día de activación en 40m</div>
+                <div class="evento-meta">
+                    <span>🏛️ Los 40m</span>
+                    <span>📅 15/07/2026</span>
+                    <span>🕐 16:00 UTC</span>
+                    <span>📻 40m SSB</span>
+                </div>
+                <div class="evento-desc">"Activación masiva para celebrar el Día del Amigo. Sintonicen la banda y llamen con nuestro prefijo de evento."</div>
+            </div>
+            <div class="evento-tags">
+                <div class="tags-fila">
+                    <span class="tag publico"><i class="fas fa-lock-open"></i> Público</span>
+                    <span class="tag confirmados"><i class="fas fa-users"></i> 12 confirmados</span>
+                </div>
+                <div class="evento-organiza">Organiza: <strong>Clan Los 40m</strong></div>
+            </div>
+        </div>
+
+        <div class="evento-card" data-tipo="privado">
+            <div class="evento-info">
+                <div class="evento-titulo"><i class="fas fa-bullhorn"></i> Concurso interno: Noche del Clan</div>
+                <div class="evento-meta">
+                    <span>🏛️ La Hermandad del Éter</span>
+                    <span>📅 20/07/2026</span>
+                    <span>🕐 02:00 UTC</span>
+                    <span>📻 Todas las bandas</span>
+                </div>
+                <div class="evento-desc">"Buscando la medalla grupal La Noche de los Clanes. Solo miembros del clan."</div>
+            </div>
+            <div class="evento-tags">
+                <div class="tags-fila">
+                    <span class="tag privado"><i class="fas fa-lock"></i> Solo Clan</span>
+                    <span class="tag confirmados"><i class="fas fa-users"></i> 8 confirmados</span>
+                </div>
+                <div class="evento-organiza">Organiza: <strong>LU5REY (Cacique)</strong></div>
+            </div>
+        </div>
+
+        <div class="evento-card" data-tipo="publico">
+            <div class="evento-info">
+                <div class="evento-titulo"><i class="fas fa-bullhorn"></i> Encuentro DX en 20m</div>
+                <div class="evento-meta">
+                    <span>🏛️ Individual</span>
+                    <span>📅 26/07/2026</span>
+                    <span>🕐 18:00 UTC</span>
+                    <span>📻 20m FT8</span>
+                </div>
+                <div class="evento-desc">"Buscando completar la Hermandad Andina, ¡se aceptan sugerencias de horario!"</div>
+            </div>
+            <div class="evento-tags">
+                <div class="tags-fila">
+                    <span class="tag publico"><i class="fas fa-lock-open"></i> Público</span>
+                    <span class="tag confirmados"><i class="fas fa-users"></i> 5 confirmados</span>
+                </div>
+                <div class="evento-organiza">Organiza: <strong>LU2COND</strong></div>
+            </div>
+        </div>
+
+        <div class="evento-card" data-tipo="publico">
+            <div class="evento-info">
+                <div class="evento-titulo"><i class="fas fa-bullhorn"></i> Ronda de Peanut y redes híbridas</div>
+                <div class="evento-meta">
+                    <span>🏛️ Individual</span>
+                    <span>📅 01/08/2026</span>
+                    <span>🕐 20:00 UTC</span>
+                    <span>📻 Peanut / EchoLink</span>
+                </div>
+                <div class="evento-desc">"Encuentro pensado para quienes buscan la medalla Puente entre Mundos."</div>
+            </div>
+            <div class="evento-tags">
+                <div class="tags-fila">
+                    <span class="tag publico"><i class="fas fa-lock-open"></i> Público</span>
+                    <span class="tag confirmados"><i class="fas fa-users"></i> 3 confirmados</span>
+                </div>
+                <div class="evento-organiza">Organiza: <strong>LW3AND</strong></div>
+            </div>
+        </div>
+
+        <div class="evento-card pasado" data-tipo="pasado">
+            <div class="evento-info">
+                <div class="evento-titulo"><i class="fas fa-bullhorn"></i> Aniversario del Clan Los 40m</div>
+                <div class="evento-meta">
+                    <span>🏛️ Los 40m</span>
+                    <span>📅 20/06/2026</span>
+                    <span>🕐 16:00 UTC</span>
+                    <span>📻 40m SSB</span>
+                </div>
+                <div class="evento-desc">"Festejamos el primer año del clan con una ronda especial."</div>
+            </div>
+            <div class="evento-tags">
+                <div class="tags-fila">
+                    <span class="tag publico"><i class="fas fa-lock-open"></i> Público</span>
+                    <span class="tag confirmados"><i class="fas fa-users"></i> 15 asistieron</span>
+                </div>
+                <div class="evento-organiza">Organizó: <strong>Clan Los 40m</strong></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CTA PEDIR EVENTO -->
+    <div class="cta-pedir">
+        <h2>🎙️ ¿Querés organizar tu propio evento?</h2>
+        <p>Cualquier operador o Cacique de clan puede pedirle al Admin que publique un evento en esta cartelera. Contanos fecha, hora, banda/modo y de qué se trata.</p>
+        <a href="ayuda.html" class="btn-solid" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px;"><i class="fas fa-paper-plane"></i> Pedir un evento</a>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-logos">
+            <img src="statics/ds_sistemas.png" alt="DS Sistemas" onclick="window.open('https://wa.me/5493725432567', '_blank')" style="cursor:pointer;" />
+        </div>
+        <p><strong>DS Sistemas</strong> · Desarrollo de Software · Infraestructura</p>
+        <div class="footer-contact">
+            📧 <a href="mailto:dorgerardo@gmail.com">dorgerardo@gmail.com</a> &nbsp;|&nbsp; 💬 <a href="https://wa.me/5493725432567" target="_blank">+54 9 3725 432567</a>
+        </div>
+        <p style="margin-top:15px; font-size:0.8rem;">
+            © 2026 DS Sistemas · Todos los derechos reservados &nbsp;|&nbsp;
+            <a href="ayuda.html">Ayuda</a> ·
+            <a href="#">Términos</a> ·
+            <a href="#">Privacidad</a>
+        </p>
+    </footer>
+
+</div>
+
+
+<!-- ========== MODAL INGRESAR / REGISTRARSE ========== -->
+<div class="modal-overlay" id="modalCuenta">
+    <div class="modal-box">
+        <button class="modal-close" id="modalCloseBtn" aria-label="Cerrar"><i class="fas fa-xmark"></i></button>
+        <div class="modal-logo"><i class="fas fa-tower-broadcast"></i> QSL DOR</div>
+        <div class="modal-tabs">
+            <button class="modal-tab" id="tabBtnIngresar" data-tab="ingresar">Ingresar</button>
+            <button class="modal-tab" id="tabBtnRegistro" data-tab="registro">Registrarse</button>
+        </div>
+
+        <!-- PANEL: INGRESAR -->
+        <div class="modal-panel" id="panelIngresar">
+            <form id="formIngresar">
+                <div class="modal-grupo">
+                    <label>Indicativo</label>
+                    <input type="text" placeholder="Ej: LU5REY" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>Contraseña</label>
+                    <input type="password" placeholder="••••••••" required />
+                </div>
+                <div class="modal-olvide"><a href="ayuda.html">¿Olvidaste tu contraseña?</a></div>
+                <button type="submit" class="modal-submit"><i class="fas fa-right-to-bracket"></i> Ingresar</button>
+                <div class="modal-status" id="statusIngresar">Ingreso simulado — acá se conectaría con el backend real.</div>
+            </form>
+        </div>
+
+        <!-- PANEL: REGISTRARSE -->
+        <div class="modal-panel" id="panelRegistro">
+            <form id="formRegistro">
+                <div class="modal-grupo">
+                    <label>Indicativo (será tu usuario)</label>
+                    <input type="text" placeholder="Ej: LU5REY" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>Email</label>
+                    <input type="email" placeholder="tu@mail.com" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>WhatsApp (opcional)</label>
+                    <input type="tel" placeholder="+54 9 ..." />
+                </div>
+                <div class="modal-grupo">
+                    <label>Contraseña</label>
+                    <input type="password" placeholder="••••••••" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>Repetir contraseña</label>
+                    <input type="password" placeholder="••••••••" required />
+                </div>
+                <div class="modal-check">
+                    <input type="checkbox" id="checkConsentimiento" required />
+                    <label for="checkConsentimiento">Acepto que mi mail y WhatsApp se compartan únicamente con usuarios con los que tenga un match confirmado, y acepto los <a href="#">Términos</a> y la <a href="#">Política de Privacidad</a>.</label>
+                </div>
+                <button type="submit" class="modal-submit"><i class="fas fa-user-plus"></i> Crear mi cuenta</button>
+                <div class="modal-status" id="statusRegistro">Registro simulado — acá se conectaría con el backend real.</div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const html = document.documentElement;
+        const toggle = document.getElementById('themeToggle');
+        const temaGuardado = localStorage.getItem('tema') || 'light';
+        html.classList.add(temaGuardado);
+        actualizarIcono(temaGuardado);
+        toggle.addEventListener('click', function() {
+            const esOscuro = html.classList.contains('dark');
+            const nuevoTema = esOscuro ? 'light' : 'dark';
+            html.classList.remove('light', 'dark');
+            html.classList.add(nuevoTema);
+            localStorage.setItem('tema', nuevoTema);
+            actualizarIcono(nuevoTema);
+        });
+        function actualizarIcono(tema) {
+            toggle.textContent = tema === 'dark' ? '☀️' : '🌙';
+        }
+    })();
+
+    // FILTROS DE EVENTOS
+    document.querySelectorAll('.filtro-chip').forEach(chip => {
+        chip.addEventListener('click', function() {
+            document.querySelectorAll('.filtro-chip').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            const filtro = this.dataset.filtro;
+            document.querySelectorAll('.evento-card').forEach(card => {
+                if (filtro === 'todos') {
+                    card.style.display = card.dataset.tipo === 'pasado' ? 'none' : 'flex';
+                } else {
+                    card.style.display = card.dataset.tipo === filtro ? 'flex' : 'none';
+                }
+            });
+        });
+    });
+
+    // Estado inicial: ocultar pasados por defecto (ya que "Todos" no los incluye)
+    document.querySelectorAll('.evento-card[data-tipo="pasado"]').forEach(c => c.style.display = 'none');
+</script>
+
+</body>
+</html>

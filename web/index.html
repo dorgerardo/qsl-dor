@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QSL DOR · Inicio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        :root {
+            --bg-body: #f5f7fa;
+            --bg-card: #ffffff;
+            --bg-nav: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --accent: #ffd966;
+            --accent-dark: #e6c35c;
+            --accent-text: #0b1a2f;
+            --card-border: #e2e8f0;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+            --info-bg: #dbeafe;
+            --info-text: #1e3a8a;
+        }
+        html.dark {
+            --bg-body: #0b1a2f;
+            --bg-card: #142b44;
+            --bg-nav: #0f2035;
+            --text-primary: #e0e7f0;
+            --text-secondary: #b0c7db;
+            --text-muted: #8899aa;
+            --border-color: #1e3a5c;
+            --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --accent: #ffd966;
+            --accent-dark: #e6c35c;
+            --accent-text: #0b1a2f;
+            --card-border: #1e3a5c;
+            --success-bg: #0f3d2e;
+            --success-text: #6ee7b7;
+            --info-bg: #172554;
+            --info-text: #93c5fd;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            padding: 0 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 0; border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap; gap: 15px; background: var(--bg-nav);
+        }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 2.2rem; font-weight: 700; color: var(--accent); text-decoration: none; }
+        .logo img { height: 55px; }
+        .nav-links { display: flex; gap: 25px; align-items: center; flex-wrap: wrap; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-weight: 500; transition: 0.2s; }
+        .nav-links a:hover { color: var(--accent); }
+        .nav-links a.active { color: var(--accent); font-weight: 600; }
+        #themeToggle {
+            background: none; border: 2px solid var(--border-color); border-radius: 50%;
+            width: 40px; height: 40px; font-size: 1.3rem; cursor: pointer; transition: 0.2s;
+            color: var(--text-primary); background: var(--bg-card);
+        }
+        #themeToggle:hover { border-color: var(--accent); transform: scale(1.05); }
+        .btn-outline {
+            border: 2px solid var(--accent); padding: 8px 20px; border-radius: 30px;
+            color: var(--accent) !important; font-weight: 600; transition: 0.2s;
+            background: transparent; cursor: pointer;
+        }
+        .btn-outline:hover { background: var(--accent); color: var(--accent-text) !important; }
+        .btn-solid {
+            background: var(--accent); padding: 8px 24px; border-radius: 30px;
+            color: var(--accent-text) !important; font-weight: 600; transition: 0.2s;
+            border: none; cursor: pointer;
+        }
+        .btn-solid:hover { background: var(--accent-dark); }
+
+        /* BANNERS */
+        .banners-zone { margin: 20px 0; display: flex; flex-direction: column; gap: 12px; }
+        .banner {
+            display: flex; align-items: center; justify-content: space-between; gap: 15px;
+            padding: 14px 20px; border-radius: 12px; font-size: 0.95rem;
+            box-shadow: var(--shadow); animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        .banner.info { background: var(--info-bg); color: var(--info-text); }
+        .banner.success { background: var(--success-bg); color: var(--success-text); }
+        .banner-content { display: flex; align-items: center; gap: 12px; }
+        .banner-content i.icon-left { font-size: 1.3rem; }
+        .banner-close {
+            background: none; border: none; font-size: 1.1rem; cursor: pointer;
+            color: inherit; opacity: 0.7; transition: 0.2s; flex-shrink: 0;
+        }
+        .banner-close:hover { opacity: 1; transform: scale(1.1); }
+
+        /* HERO */
+        .hero { text-align: center; padding: 50px 0 10px; }
+        .hero h1 { font-size: 2.6rem; margin-bottom: 12px; }
+        .hero h1 span { color: var(--accent); }
+        .hero p { color: var(--text-secondary); font-size: 1.15rem; max-width: 650px; margin: 0 auto 25px; }
+        .hero-actions { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .hero-actions button { padding: 12px 30px; font-size: 1rem; }
+
+        /* SECCIÓN ÉPICA "QUÉ HACEMOS" (cerrable) */
+        .mision-box {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-left: 5px solid var(--accent);
+            border-radius: 16px;
+            padding: 28px 32px;
+            box-shadow: var(--shadow);
+            margin: 30px 0;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+        .mision-box .mision-close {
+            position: absolute;
+            top: 16px; right: 18px;
+            background: none; border: none;
+            font-size: 1.1rem; cursor: pointer;
+            color: var(--text-muted); opacity: 0.7; transition: 0.2s;
+        }
+        .mision-box .mision-close:hover { opacity: 1; color: var(--text-primary); }
+        .mision-box h2 {
+            font-size: 1.4rem;
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 14px;
+            padding-right: 30px;
+        }
+        .mision-box h2 i { color: var(--accent); }
+        .mision-box p {
+            color: var(--text-secondary);
+            font-size: 0.98rem;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+        .mision-box p:last-child { margin-bottom: 0; }
+        .mision-box strong { color: var(--text-primary); }
+
+        /* ESTADÍSTICAS */
+        .stats-strip {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px; margin: 30px 0;
+        }
+        .stat-box {
+            background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 14px;
+            padding: 18px; text-align: center; box-shadow: var(--shadow);
+        }
+        .stat-box .num { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+        .stat-box .label { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+
+        /* SECCIONES */
+        .section { margin: 50px 0; }
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 22px; flex-wrap: wrap; gap: 10px;
+        }
+        .section-header h2 { font-size: 1.7rem; display: flex; align-items: center; gap: 12px; }
+        .section-header h2 i { color: var(--accent); }
+        .section-header a.ver-todos { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+        .section-header a.ver-todos:hover { color: var(--accent); }
+
+        /* TARJETAS DE EVENTO */
+        .eventos-lista { display: flex; flex-direction: column; gap: 16px; }
+        .evento-card {
+            background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 16px;
+            padding: 20px 24px; box-shadow: var(--shadow);
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 20px; flex-wrap: wrap; transition: 0.2s;
+        }
+        .evento-card:hover { transform: translateY(-2px); }
+        .evento-info { flex: 1; min-width: 260px; }
+        .evento-titulo { display: flex; align-items: center; gap: 10px; font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
+        .evento-titulo i { color: var(--accent); }
+        .evento-meta { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px; }
+        .evento-meta span:not(:last-child)::after { content: "·"; margin: 0 6px; color: var(--text-muted); }
+        .evento-desc { color: var(--text-muted); font-size: 0.9rem; font-style: italic; }
+        .evento-tags { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; white-space: nowrap; }
+        .tag.publico { background: var(--success-bg); color: var(--success-text); }
+        .tag.privado { background: var(--border-color); color: var(--text-secondary); }
+        .tag.confirmados { background: var(--accent); color: var(--accent-text); }
+        .evento-organiza { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; }
+        .evento-organiza strong { color: var(--text-secondary); }
+
+        /* TIER LISTS */
+        .tiers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .tier-panel {
+            background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 16px;
+            padding: 24px; box-shadow: var(--shadow);
+        }
+        .tier-panel h3 { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; margin-bottom: 18px; }
+        .tier-panel h3 i { color: var(--accent); }
+        .tier-row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+        .tier-row:last-child { border-bottom: none; }
+        .tier-pos { font-weight: 700; font-size: 1.1rem; color: var(--text-muted); width: 28px; text-align: center; flex-shrink: 0; }
+        .tier-row:nth-child(1) .tier-pos { color: #ffd700; }
+        .tier-row:nth-child(2) .tier-pos { color: #c0c0c0; }
+        .tier-row:nth-child(3) .tier-pos { color: #cd7f32; }
+        .tier-avatar {
+            width: 42px; height: 42px; border-radius: 50%; background: var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: var(--accent-text); flex-shrink: 0; font-size: 0.95rem;
+        }
+        .tier-info { flex: 1; }
+        .tier-name { font-weight: 600; font-size: 0.98rem; }
+        .tier-sub { font-size: 0.8rem; color: var(--text-muted); }
+        .tier-medallas { display: flex; align-items: center; gap: 6px; font-weight: 700; color: var(--accent-dark); font-size: 0.95rem; flex-shrink: 0; }
+        html.dark .tier-medallas { color: var(--accent); }
+
+        /* CTA FINAL */
+        .cta-final {
+            text-align: center; background: var(--bg-card); border: 1px solid var(--card-border);
+            border-radius: 20px; padding: 45px 25px; box-shadow: var(--shadow); margin: 50px 0;
+        }
+        .cta-final h2 { font-size: 1.8rem; margin-bottom: 10px; }
+        .cta-final p { color: var(--text-secondary); max-width: 550px; margin: 0 auto 22px; }
+
+        /* FOOTER */
+        .footer {
+            text-align: center; padding: 40px 0 20px; border-top: 1px solid var(--border-color);
+            color: var(--text-muted); font-size: 0.9rem; margin-top: 30px;
+        }
+        .footer .footer-logos { display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 15px; }
+        .footer .footer-logos img { height: 40px; }
+        .footer a { color: var(--text-muted); text-decoration: none; }
+        .footer a:hover { color: var(--accent); }
+        .footer .footer-contact { margin: 10px 0; }
+        .footer .footer-contact a { color: var(--accent); font-weight: 600; }
+
+        @media (max-width: 800px) {
+            .tiers-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2rem; }
+            .evento-card { flex-direction: column; align-items: flex-start; }
+        }
+    
+        /* ========== MODAL INGRESAR / REGISTRARSE ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.visible { display: flex; }
+        .modal-box {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+            position: relative;
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-close {
+            position: absolute;
+            top: 16px; right: 18px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-close:hover { color: var(--text-primary); }
+        .modal-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        .modal-tabs {
+            display: flex;
+            background: var(--input-bg, var(--bg-body));
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 22px;
+        }
+        .modal-tab {
+            flex: 1;
+            text-align: center;
+            padding: 9px 0;
+            border-radius: 9px;
+            border: none;
+            background: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-tab.active { background: var(--accent); color: var(--accent-text); }
+        .modal-panel { display: none; }
+        .modal-panel.active { display: block; }
+        .modal-grupo { margin-bottom: 14px; }
+        .modal-grupo label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+        .modal-grupo input {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg, var(--bg-body));
+            color: var(--text-primary);
+            font-size: 0.92rem;
+        }
+        .modal-grupo input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+        .modal-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+        .modal-check input { margin-top: 3px; flex-shrink: 0; }
+        .modal-check a { color: var(--accent-dark); }
+        html.dark .modal-check a { color: var(--accent); }
+        .modal-olvide {
+            text-align: right;
+            margin: -8px 0 18px;
+        }
+        .modal-olvide a {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+        .modal-olvide a:hover { color: var(--accent-dark); }
+        .modal-submit {
+            width: 100%;
+            padding: 13px 0;
+            border-radius: 12px;
+            border: none;
+            background: var(--accent);
+            color: var(--accent-text);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-submit:hover { background: var(--accent-dark); }
+        .modal-status {
+            display: none;
+            margin-top: 14px;
+            padding: 11px 14px;
+            background: var(--success-bg, #d1fae5);
+            color: var(--success-text, #065f46);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .modal-status.visible { display: block; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <img src="statics/logo_qsl_dor.png" alt="QSL DOR" />
+            QSL DOR
+        </a>
+        <div class="nav-links">
+            <a href="index.html" class="active">🏠 Inicio</a>
+            <a href="panel.html">🗂️ Mi Panel</a>
+            <a href="eventos.html">📅 Eventos</a>
+            <a href="museo.html">🏛️ Museo</a>
+            <a href="app.html">📲 QSL App</a>
+            <a href="ayuda.html">🆘 Ayuda</a>
+            <button id="themeToggle" aria-label="Cambiar tema">🌙</button>
+            <button class="btn-outline"><i class="fas fa-user"></i> Ingresar</button>
+            <button class="btn-solid"><i class="fas fa-user-plus"></i> Registrarse</button>
+        </div>
+    </nav>
+
+    <!--
+        ========== BANNERS DEL ADMIN ==========
+        Cada banner tiene un data-banner-id fijo (identifica DE QUÉ trata)
+        y un data-version (número que el Admin sube cada vez que edita el
+        contenido). El JS guarda en localStorage la versión que el usuario
+        ya cerró; si la versión actual es mayor a la guardada, el banner
+        vuelve a aparecer aunque ya lo hayan cerrado antes.
+    -->
+    <div class="banners-zone" id="bannersZone">
+        <div class="banner info" data-banner-id="mantenimiento" data-version="1">
+            <div class="banner-content">
+                <i class="fas fa-circle-info icon-left"></i>
+                <span><strong>Aviso:</strong> el domingo 12/07 haremos mantenimiento de la plataforma entre las 03:00 y 05:00 UTC. El matching seguirá funcionando con normalidad.</span>
+            </div>
+            <button class="banner-close" aria-label="Cerrar aviso"><i class="fas fa-xmark"></i></button>
+        </div>
+        <div class="banner success" data-banner-id="novedad-medalla" data-version="1">
+            <div class="banner-content">
+                <i class="fas fa-medal icon-left"></i>
+                <span><strong>¡Novedad!</strong> Se sumó la medalla "Puente entre Mundos" para quienes combinan contactos analógicos, digitales e híbridos (Peanut, EchoLink, AllStarLink). Descubrila en el Museo.</span>
+            </div>
+            <button class="banner-close" aria-label="Cerrar aviso"><i class="fas fa-xmark"></i></button>
+        </div>
+    </div>
+
+    <!-- HERO (texto editable por el Admin desde su panel) -->
+    <div class="hero">
+        <h1>Tu contacto ya está en el <span>éter</span>. Encontralo.</h1>
+        <p>QSL DOR conecta a los radioaficionados que ya se contactaron, automatiza el cruce de sus ADIF y les facilita el envío de sus diplomas. Subí tu log, esperá el match, ganate tu lugar en el Museo.</p>
+        <div class="hero-actions">
+            <button class="btn-solid"><i class="fas fa-user-plus"></i> Registrarse</button>
+            <button class="btn-outline"><i class="fas fa-download"></i> Descargar QSL App</button>
+        </div>
+    </div>
+
+    <!--
+        SECCIÓN ÉPICA "QUÉ HACEMOS" — cerrable igual que un banner,
+        pero con más espacio para contar la misión del proyecto.
+        El texto completo también debería salir de un campo editable
+        por el Admin, igual que el hero de arriba.
+    -->
+    <div class="mision-box" id="misionBox" data-banner-id="mision" data-version="1">
+        <button class="mision-close" aria-label="Cerrar"><i class="fas fa-xmark"></i></button>
+        <h2><i class="fas fa-tower-broadcast"></i> ¿Qué es QSL DOR?</h2>
+        <p>Cada contacto de radio es un pequeño acto de encuentro entre dos personas que quizás nunca se crucen en persona. Durante décadas, esa historia terminaba en una tarjeta QSL que tardaba meses en cruzar el océano, o directamente se perdía en el camino. <strong>Nosotros venimos a simplificar ese último tramo</strong>: el intercambio de QSL y reconocimientos entre camaradas de la radioafición.</p>
+        <p>Nuestra <strong>QSL App</strong> es el motor silencioso: vigila tu carpeta de logs y sube tus contactos sin que tengas que mover un dedo. Pero lo que te va a hacer quedarte es lo otro — el <strong>reconocimiento</strong>. Cada país nuevo, cada banda dominada, cada madrugada operando: todo eso queda escrito en tu historia dentro del <strong>Museo de Condecoraciones</strong>, con clanes, rangos y medallas que solo se ganan con contactos reales, confirmados por ambos lados del éter.</p>
+        <p>No competimos por ser el catálogo más grande de indicativos del mundo. Competimos por ser el lugar donde tu esfuerzo como operador queda, por fin, a la vista de todos.</p>
+    </div>
+
+    <!-- ESTADÍSTICAS GLOBALES -->
+    <div class="stats-strip">
+        <div class="stat-box">
+            <div class="num">3.482</div>
+            <div class="label">Contactos confirmados</div>
+        </div>
+        <div class="stat-box">
+            <div class="num">61</div>
+            <div class="label">Países representados</div>
+        </div>
+        <div class="stat-box">
+            <div class="num">214</div>
+            <div class="label">Operadores activos</div>
+        </div>
+        <div class="stat-box">
+            <div class="num">28</div>
+            <div class="label">Clanes en pie</div>
+        </div>
+    </div>
+
+    <!-- SALÓN DE LA FAMA (ahora arriba de Eventos) -->
+    <div class="section">
+        <div class="section-header">
+            <h2><i class="fas fa-trophy"></i> Salón de la Fama</h2>
+        </div>
+        <div class="tiers-grid">
+            <div class="tier-panel">
+                <h3><i class="fas fa-user-astronaut"></i> Top Operadores</h3>
+                <div class="tier-row">
+                    <span class="tier-pos">1</span>
+                    <div class="tier-avatar">LU</div>
+                    <div class="tier-info"><div class="tier-name">LU5REY</div><div class="tier-sub">Clan: La Hermandad del Éter</div></div>
+                    <div class="tier-medallas"><i class="fas fa-medal"></i> 34</div>
+                </div>
+                <div class="tier-row">
+                    <span class="tier-pos">2</span>
+                    <div class="tier-avatar">LW</div>
+                    <div class="tier-info"><div class="tier-name">LW7DXX</div><div class="tier-sub">Clan: Los Conquistadores</div></div>
+                    <div class="tier-medallas"><i class="fas fa-medal"></i> 29</div>
+                </div>
+                <div class="tier-row">
+                    <span class="tier-pos">3</span>
+                    <div class="tier-avatar">LU</div>
+                    <div class="tier-info"><div class="tier-name">LU2COND</div><div class="tier-sub">Sin clan</div></div>
+                    <div class="tier-medallas"><i class="fas fa-medal"></i> 25</div>
+                </div>
+                <div class="tier-row">
+                    <span class="tier-pos">4</span>
+                    <div class="tier-avatar">LU</div>
+                    <div class="tier-info"><div class="tier-name">LU9NOC</div><div class="tier-sub">Clan: La Noche</div></div>
+                    <div class="tier-medallas"><i class="fas fa-medal"></i> 21</div>
+                </div>
+                <div class="tier-row">
+                    <span class="tier-pos">5</span>
+                    <div class="tier-avatar">LW</div>
+                    <div class="tier-info"><div class="tier-name">LW3AND</div><div class="tier-sub">Clan: Los 40m</div></div>
+                    <div class="tier-medallas"><i class="fas fa-medal"></i> 19</div>
+                </div>
+            </div>
+
+            <div class="tier-panel">
+                <h3><i class="fas fa-shield-halved"></i> Top Clanes</h3>
+                <div class="tier-row">
+                    <span class="tier-pos">1</span>
+                    <div class="tier-avatar">🏹</div>
+                    <div class="tier-info"><div class="tier-name">La Hermandad del Éter</div><div class="tier-sub">10/10 miembros</div></div>
+                    <div class="tier-medallas"><i class="fas fa-medal"></i> 12</div>
+                </div>
+                <div class="tier-row">
+                    <span class="tier-pos">2</span>
+                    <div class="tier-avatar">⚔️</div>
+                    <div class="tier-info"><div class="tier-name">Los Conquistadores de Banda</div><div class="tier-sub">9/10 miembros</div></div>
+                    <div class="tier-medallas"><i class="fas fa-medal"></i> 9</div>
+                </div>
+                <div class="tier-row">
+                    <span class="tier-pos">3</span>
+                    <div class="tier-avatar">🌙</div>
+                    <div class="tier-info"><div class="tier-name">La Noche</div><div class="tier-sub">7/10 miembros</div></div>
+                    <div class="tier-medallas"><i class="fas fa-medal"></i> 7</div>
+                </div>
+                <div class="tier-row">
+                    <span class="tier-pos">4</span>
+                    <div class="tier-avatar">🌎</div>
+                    <div class="tier-info"><div class="tier-name">La Legión del DX</div><div class="tier-sub">10/10 miembros</div></div>
+                    <div class="tier-medallas"><i class="fas fa-medal"></i> 6</div>
+                </div>
+                <div class="tier-row">
+                    <span class="tier-pos">5</span>
+                    <div class="tier-avatar">📡</div>
+                    <div class="tier-info"><div class="tier-name">Los 40m</div><div class="tier-sub">6/10 miembros</div></div>
+                    <div class="tier-medallas"><i class="fas fa-medal"></i> 4</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRÓXIMOS EVENTOS (ahora más abajo) -->
+    <div class="section">
+        <div class="section-header">
+            <h2><i class="fas fa-calendar-days"></i> Próximos eventos</h2>
+            <a href="eventos.html" class="ver-todos">Ver todos <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="eventos-lista">
+            <div class="evento-card">
+                <div class="evento-info">
+                    <div class="evento-titulo"><i class="fas fa-bullhorn"></i> Día de activación en 40m</div>
+                    <div class="evento-meta">
+                        <span>🏛️ Los 40m</span><span>📅 15/07/2026</span><span>🕐 16:00 UTC</span><span>📻 40m SSB</span>
+                    </div>
+                    <div class="evento-desc">"Activación masiva para celebrar el Día del Amigo"</div>
+                    <div class="evento-organiza">Organiza: <strong>Clan Los 40m</strong></div>
+                </div>
+                <div class="evento-tags">
+                    <span class="tag publico"><i class="fas fa-lock-open"></i> Público</span>
+                    <span class="tag confirmados"><i class="fas fa-users"></i> 12 confirmados</span>
+                </div>
+            </div>
+            <div class="evento-card">
+                <div class="evento-info">
+                    <div class="evento-titulo"><i class="fas fa-bullhorn"></i> Concurso interno: Noche del Clan</div>
+                    <div class="evento-meta">
+                        <span>🏛️ La Hermandad del Éter</span><span>📅 20/07/2026</span><span>🕐 02:00 UTC</span><span>📻 Todas las bandas</span>
+                    </div>
+                    <div class="evento-desc">"Buscando la medalla de La Noche de los Clanes"</div>
+                    <div class="evento-organiza">Organiza: <strong>LU5REY (Cacique)</strong></div>
+                </div>
+                <div class="evento-tags">
+                    <span class="tag privado"><i class="fas fa-lock"></i> Solo Clan</span>
+                    <span class="tag confirmados"><i class="fas fa-users"></i> 8 confirmados</span>
+                </div>
+            </div>
+            <div class="evento-card">
+                <div class="evento-info">
+                    <div class="evento-titulo"><i class="fas fa-bullhorn"></i> Encuentro DX en 20m</div>
+                    <div class="evento-meta">
+                        <span>🏛️ Individual</span><span>📅 26/07/2026</span><span>🕐 18:00 UTC</span><span>📻 20m FT8</span>
+                    </div>
+                    <div class="evento-desc">"Buscando completar la Hermandad Andina, ¡se aceptan sugerencias!"</div>
+                    <div class="evento-organiza">Organiza: <strong>LU2COND</strong></div>
+                </div>
+                <div class="evento-tags">
+                    <span class="tag publico"><i class="fas fa-lock-open"></i> Público</span>
+                    <span class="tag confirmados"><i class="fas fa-users"></i> 5 confirmados</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA FINAL -->
+    <div class="cta-final">
+        <h2>🎖️ Tu próxima medalla te está esperando</h2>
+        <p>Subí tu historial de ADIF, dejá que el sistema busque tus matches y empezá a construir tu leyenda en el éter.</p>
+        <button class="btn-solid"><i class="fas fa-rocket"></i> Empezar ahora</button>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-logos">
+            <img src="statics/ds_sistemas.png" alt="DS Sistemas" onclick="window.open('https://wa.me/5493725432567', '_blank')" style="cursor:pointer;" />
+        </div>
+        <p><strong>DS Sistemas</strong> · Desarrollo de Software · Infraestructura</p>
+        <div class="footer-contact">
+            📧 <a href="mailto:dorgerardo@gmail.com">dorgerardo@gmail.com</a> &nbsp;|&nbsp; 💬 <a href="https://wa.me/5493725432567" target="_blank">+54 9 3725 432567</a>
+        </div>
+        <p style="margin-top:15px; font-size:0.8rem;">
+            © 2026 DS Sistemas · Todos los derechos reservados &nbsp;|&nbsp;
+            <a href="ayuda.html">Ayuda</a> ·
+            <a href="#">Términos</a> ·
+            <a href="#">Privacidad</a>
+        </p>
+    </footer>
+
+</div>
+
+
+<!-- ========== MODAL INGRESAR / REGISTRARSE ========== -->
+<div class="modal-overlay" id="modalCuenta">
+    <div class="modal-box">
+        <button class="modal-close" id="modalCloseBtn" aria-label="Cerrar"><i class="fas fa-xmark"></i></button>
+        <div class="modal-logo"><i class="fas fa-tower-broadcast"></i> QSL DOR</div>
+        <div class="modal-tabs">
+            <button class="modal-tab" id="tabBtnIngresar" data-tab="ingresar">Ingresar</button>
+            <button class="modal-tab" id="tabBtnRegistro" data-tab="registro">Registrarse</button>
+        </div>
+
+        <!-- PANEL: INGRESAR -->
+        <div class="modal-panel" id="panelIngresar">
+            <form id="formIngresar">
+                <div class="modal-grupo">
+                    <label>Indicativo</label>
+                    <input type="text" placeholder="Ej: LU5REY" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>Contraseña</label>
+                    <input type="password" placeholder="••••••••" required />
+                </div>
+                <div class="modal-olvide"><a href="ayuda.html">¿Olvidaste tu contraseña?</a></div>
+                <button type="submit" class="modal-submit"><i class="fas fa-right-to-bracket"></i> Ingresar</button>
+                <div class="modal-status" id="statusIngresar">Ingreso simulado — acá se conectaría con el backend real.</div>
+            </form>
+        </div>
+
+        <!-- PANEL: REGISTRARSE -->
+        <div class="modal-panel" id="panelRegistro">
+            <form id="formRegistro">
+                <div class="modal-grupo">
+                    <label>Indicativo (será tu usuario)</label>
+                    <input type="text" placeholder="Ej: LU5REY" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>Email</label>
+                    <input type="email" placeholder="tu@mail.com" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>WhatsApp (opcional)</label>
+                    <input type="tel" placeholder="+54 9 ..." />
+                </div>
+                <div class="modal-grupo">
+                    <label>Contraseña</label>
+                    <input type="password" placeholder="••••••••" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>Repetir contraseña</label>
+                    <input type="password" placeholder="••••••••" required />
+                </div>
+                <div class="modal-check">
+                    <input type="checkbox" id="checkConsentimiento" required />
+                    <label for="checkConsentimiento">Acepto que mi mail y WhatsApp se compartan únicamente con usuarios con los que tenga un match confirmado, y acepto los <a href="#">Términos</a> y la <a href="#">Política de Privacidad</a>.</label>
+                </div>
+                <button type="submit" class="modal-submit"><i class="fas fa-user-plus"></i> Crear mi cuenta</button>
+                <div class="modal-status" id="statusRegistro">Registro simulado — acá se conectaría con el backend real.</div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // TEMA OSCURO/CLARO
+    (function() {
+        const html = document.documentElement;
+        const toggle = document.getElementById('themeToggle');
+        const temaGuardado = localStorage.getItem('tema') || 'light';
+        html.classList.add(temaGuardado);
+        actualizarIcono(temaGuardado);
+        toggle.addEventListener('click', function() {
+            const esOscuro = html.classList.contains('dark');
+            const nuevoTema = esOscuro ? 'light' : 'dark';
+            html.classList.remove('light', 'dark');
+            html.classList.add(nuevoTema);
+            localStorage.setItem('tema', nuevoTema);
+            actualizarIcono(nuevoTema);
+        });
+        function actualizarIcono(tema) {
+            toggle.textContent = tema === 'dark' ? '☀️' : '🌙';
+        }
+    })();
+
+    // BANNERS Y MISIÓN: cerrables, pero reaparecen si el Admin cambia la versión del contenido
+    (function() {
+        const STORAGE_KEY = 'banners_cerrados_v2'; // guarda { bannerId: versionCerrada }
+
+        function getCerrados() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+            catch (e) { return {}; }
+        }
+        function marcarCerrado(id, version) {
+            const cerrados = getCerrados();
+            cerrados[id] = version;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(cerrados));
+        }
+
+        const cerrados = getCerrados();
+
+        // Banners normales
+        document.querySelectorAll('.banner[data-banner-id]').forEach(banner => {
+            const id = banner.dataset.bannerId;
+            const version = parseInt(banner.dataset.version || '1', 10);
+            if (cerrados[id] && cerrados[id] >= version) {
+                banner.remove();
+                return;
+            }
+            const closeBtn = banner.querySelector('.banner-close');
+            closeBtn.addEventListener('click', () => {
+                banner.style.opacity = '0';
+                banner.style.transform = 'translateY(-8px)';
+                setTimeout(() => banner.remove(), 200);
+                marcarCerrado(id, version);
+            });
+        });
+
+        // Caja de misión (mismo mecanismo, distinto contenedor)
+        const misionBox = document.getElementById('misionBox');
+        if (misionBox) {
+            const id = misionBox.dataset.bannerId;
+            const version = parseInt(misionBox.dataset.version || '1', 10);
+            if (cerrados[id] && cerrados[id] >= version) {
+                misionBox.remove();
+            } else {
+                misionBox.querySelector('.mision-close').addEventListener('click', () => {
+                    misionBox.style.opacity = '0';
+                    setTimeout(() => misionBox.remove(), 200);
+                    marcarCerrado(id, version);
+                });
+            }
+        }
+    })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QSL DOR · QSL App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        :root {
+            --bg-body: #f5f7fa;
+            --bg-card: #ffffff;
+            --bg-nav: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --accent: #ffd966;
+            --accent-dark: #e6c35c;
+            --accent-text: #0b1a2f;
+            --card-border: #e2e8f0;
+            --code-bg: #1a202c;
+            --code-text: #e0e7f0;
+        }
+        html.dark {
+            --bg-body: #0b1a2f;
+            --bg-card: #142b44;
+            --bg-nav: #0f2035;
+            --text-primary: #e0e7f0;
+            --text-secondary: #b0c7db;
+            --text-muted: #8899aa;
+            --border-color: #1e3a5c;
+            --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --accent: #ffd966;
+            --accent-dark: #e6c35c;
+            --accent-text: #0b1a2f;
+            --card-border: #1e3a5c;
+            --code-bg: #060f1c;
+            --code-text: #d1e0f0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            padding: 0 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 0; border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap; gap: 15px; background: var(--bg-nav);
+        }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 2.2rem; font-weight: 700; color: var(--accent); text-decoration: none; }
+        .logo img { height: 55px; }
+        .nav-links { display: flex; gap: 25px; align-items: center; flex-wrap: wrap; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-weight: 500; transition: 0.2s; }
+        .nav-links a:hover { color: var(--accent); }
+        .nav-links a.active { color: var(--accent); font-weight: 600; }
+        #themeToggle {
+            background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 50%;
+            width: 40px; height: 40px; font-size: 1.3rem; cursor: pointer; transition: 0.2s; color: var(--text-primary);
+        }
+        #themeToggle:hover { border-color: var(--accent); transform: scale(1.05); }
+        .btn-outline {
+            border: 2px solid var(--accent); padding: 8px 20px; border-radius: 30px;
+            color: var(--accent) !important; font-weight: 600; transition: 0.2s;
+            background: transparent; cursor: pointer; font-size: 0.95rem;
+        }
+        .btn-outline:hover { background: var(--accent); color: var(--accent-text) !important; }
+        .btn-solid {
+            background: var(--accent); padding: 8px 24px; border-radius: 30px;
+            color: var(--accent-text) !important; font-weight: 600; transition: 0.2s;
+            border: none; cursor: pointer; font-size: 0.95rem;
+        }
+        .btn-solid:hover { background: var(--accent-dark); }
+
+        /* HERO DE LA APP */
+        .app-hero {
+            text-align: center;
+            padding: 50px 0 20px;
+        }
+        .app-hero .icono-app {
+            width: 90px; height: 90px;
+            background: var(--accent);
+            border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; color: var(--accent-text);
+            margin: 0 auto 20px;
+        }
+        .app-hero h1 { font-size: 2.4rem; margin-bottom: 10px; }
+        .app-hero p { color: var(--text-secondary); font-size: 1.1rem; max-width: 620px; margin: 0 auto 25px; }
+        .app-hero .descargas {
+            display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;
+        }
+
+        /* SECCIÓN GENERAL */
+        .section { margin: 55px 0; }
+        .section-header { text-align: center; margin-bottom: 35px; }
+        .section-header h2 { font-size: 1.7rem; display: inline-flex; align-items: center; gap: 10px; }
+        .section-header h2 i { color: var(--accent); }
+        .section-header p { color: var(--text-secondary); max-width: 550px; margin: 10px auto 0; }
+
+        /* CÓMO FUNCIONA - PASOS */
+        .pasos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+        }
+        .paso-card {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        .paso-numero {
+            width: 34px; height: 34px;
+            background: var(--accent);
+            color: var(--accent-text);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+        .paso-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
+        .paso-card p { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; }
+
+        /* CARPETA VISUAL */
+        .carpeta-demo {
+            background: var(--code-bg);
+            color: var(--code-text);
+            border-radius: 14px;
+            padding: 20px 24px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.88rem;
+            line-height: 1.9;
+            box-shadow: var(--shadow);
+            max-width: 560px;
+            margin: 25px auto 0;
+        }
+        .carpeta-demo .ruta { color: #ffd966; }
+        .carpeta-demo .archivo { padding-left: 24px; color: #8ee4af; }
+        .carpeta-demo .archivo.nuevo::after {
+            content: " ← recién detectado, subiendo...";
+            color: #f6ad55;
+        }
+
+        /* COMPATIBILIDAD */
+        .compat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .compat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .compat-card i { font-size: 2.2rem; color: var(--accent); margin-bottom: 12px; }
+        .compat-card h3 { font-size: 1.05rem; margin-bottom: 6px; }
+        .compat-card span { font-size: 0.82rem; color: var(--text-muted); }
+
+        /* MODOS SOPORTADOS */
+        .modos-lista {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .modo-chip {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modo-chip i { color: var(--accent); }
+        .modo-chip.manual {
+            opacity: 0.75;
+        }
+        .nota-modos {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 18px;
+            max-width: 550px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* PRIVACIDAD BOX */
+        .privacidad-box {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-left: 5px solid var(--accent);
+            border-radius: 14px;
+            padding: 24px 28px;
+            box-shadow: var(--shadow);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .privacidad-box h3 { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 1.1rem; }
+        .privacidad-box h3 i { color: var(--accent); }
+        .privacidad-box p { color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; }
+
+        /* CTA FINAL */
+        .cta-final {
+            text-align: center;
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 45px 25px;
+            box-shadow: var(--shadow);
+            margin: 55px 0 30px;
+        }
+        .cta-final h2 { font-size: 1.7rem; margin-bottom: 10px; }
+        .cta-final p { color: var(--text-secondary); max-width: 500px; margin: 0 auto 22px; }
+
+        .footer {
+            text-align: center; padding: 40px 0 20px; border-top: 1px solid var(--border-color);
+            color: var(--text-muted); font-size: 0.9rem; margin-top: 20px;
+        }
+        .footer .footer-logos { display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 15px; }
+        .footer .footer-logos img { height: 40px; }
+        .footer a { color: var(--text-muted); text-decoration: none; }
+        .footer a:hover { color: var(--accent); }
+        .footer .footer-contact { margin: 10px 0; }
+        .footer .footer-contact a { color: var(--accent); font-weight: 600; }
+
+        @media (max-width: 800px) {
+            .compat-grid { grid-template-columns: 1fr; }
+        }
+    
+        /* ========== MODAL INGRESAR / REGISTRARSE ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.visible { display: flex; }
+        .modal-box {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+            position: relative;
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-close {
+            position: absolute;
+            top: 16px; right: 18px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-close:hover { color: var(--text-primary); }
+        .modal-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        .modal-tabs {
+            display: flex;
+            background: var(--input-bg, var(--bg-body));
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 22px;
+        }
+        .modal-tab {
+            flex: 1;
+            text-align: center;
+            padding: 9px 0;
+            border-radius: 9px;
+            border: none;
+            background: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-tab.active { background: var(--accent); color: var(--accent-text); }
+        .modal-panel { display: none; }
+        .modal-panel.active { display: block; }
+        .modal-grupo { margin-bottom: 14px; }
+        .modal-grupo label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+        .modal-grupo input {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg, var(--bg-body));
+            color: var(--text-primary);
+            font-size: 0.92rem;
+        }
+        .modal-grupo input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+        .modal-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+        .modal-check input { margin-top: 3px; flex-shrink: 0; }
+        .modal-check a { color: var(--accent-dark); }
+        html.dark .modal-check a { color: var(--accent); }
+        .modal-olvide {
+            text-align: right;
+            margin: -8px 0 18px;
+        }
+        .modal-olvide a {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+        .modal-olvide a:hover { color: var(--accent-dark); }
+        .modal-submit {
+            width: 100%;
+            padding: 13px 0;
+            border-radius: 12px;
+            border: none;
+            background: var(--accent);
+            color: var(--accent-text);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-submit:hover { background: var(--accent-dark); }
+        .modal-status {
+            display: none;
+            margin-top: 14px;
+            padding: 11px 14px;
+            background: var(--success-bg, #d1fae5);
+            color: var(--success-text, #065f46);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .modal-status.visible { display: block; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <img src="statics/logo_qsl_dor.png" alt="QSL DOR" />
+            QSL DOR
+        </a>
+        <div class="nav-links">
+            <a href="index.html">🏠 Inicio</a>
+            <a href="panel.html">🗂️ Mi Panel</a>
+            <a href="eventos.html">📅 Eventos</a>
+            <a href="museo.html">🏛️ Museo</a>
+            <a href="app.html" class="active">📲 QSL App</a>
+            <a href="ayuda.html">🆘 Ayuda</a>
+            <button id="themeToggle" aria-label="Cambiar tema">🌙</button>
+            <button class="btn-outline"><i class="fas fa-user"></i> Ingresar</button>
+            <button class="btn-solid"><i class="fas fa-user-plus"></i> Registrarse</button>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <div class="app-hero">
+        <div class="icono-app"><i class="fas fa-folder-tree"></i></div>
+        <h1>Subí tus ADIF sin mover un dedo</h1>
+        <p>La QSL App vigila una carpeta de tu computadora. Cada vez que tu logger guarda un archivo ahí, nosotros lo leemos y lo subimos a tu cuenta automáticamente. Vos seguís operando, nosotros nos encargamos del resto.</p>
+        <div class="descargas">
+            <button class="btn-solid"><i class="fab fa-windows"></i> Descargar para Windows (64 bits)</button>
+        </div>
+    </div>
+
+    <!-- CÓMO FUNCIONA -->
+    <div class="section">
+        <div class="section-header">
+            <h2><i class="fas fa-gears"></i> Cómo funciona</h2>
+            <p>Cuatro pasos, una sola vez. Después, la QSL App corre en segundo plano y no tenés que volver a pensarlo.</p>
+        </div>
+        <div class="pasos-grid">
+            <div class="paso-card">
+                <div class="paso-numero">1</div>
+                <h3>Instalá la QSL App</h3>
+                <p>Descargala, abrila, e iniciá sesión con tu cuenta de QSL DOR (el mismo callsign y clave que usás en la web).</p>
+            </div>
+            <div class="paso-card">
+                <div class="paso-numero">2</div>
+                <h3>Elegí tu carpeta de logs</h3>
+                <p>Le indicás dónde tu programa de logueo (o vos manualmente) guarda los archivos .adi. Por ejemplo, tu carpeta de Documentos.</p>
+            </div>
+            <div class="paso-card">
+                <div class="paso-numero">3</div>
+                <h3>Dejala corriendo</h3>
+                <p>La QSL App queda escaneando esa carpeta todo el tiempo. No hace falta que hagas nada más — ni abrir la web, ni exportar a mano.</p>
+            </div>
+            <div class="paso-card">
+                <div class="paso-numero">4</div>
+                <h3>Recibí tus matches</h3>
+                <p>Apenas otro operador confirme el mismo contacto, te va a aparecer en tu Panel (y por Telegram, si lo vinculaste) con el enlace directo para el envío de tu diploma.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEMO VISUAL DE CARPETA -->
+    <div class="section">
+        <div class="section-header">
+            <h2><i class="fas fa-eye"></i> Así lo ve la QSL App</h2>
+            <p>Ni bien tu logger guarda un archivo nuevo en la carpeta elegida, nosotros lo detectamos y empezamos a procesarlo.</p>
+        </div>
+        <div class="carpeta-demo">
+            📁 C:\Users\Julio\Documentos\MisLogs<br>
+            <span class="archivo">📄 qso_2026_06_28.adi</span><br>
+            <span class="archivo">📄 qso_2026_07_02.adi</span><br>
+            <span class="archivo nuevo">📄 qso_2026_07_05.adi</span>
+        </div>
+    </div>
+
+    <!-- CARGA RÁPIDA DESDE LA APP -->
+    <div class="section">
+        <div class="section-header">
+            <h2><i class="fas fa-bolt"></i> Carga rápida, sin salir del teclado</h2>
+            <p>¿Preferís no depender de tu logger? La QSL App también tiene su propio formulario relámpago: escribís el indicativo, elegís banda y modo, y listo — la hora la toma sola.</p>
+        </div>
+        <div class="carpeta-demo" style="max-width:480px; text-align:left;">
+            <span style="color:#ffd966;">⚡ Carga rápida — QSL App</span><br><br>
+            Indicativo: <span style="color:#8ee4af;">LW7DXX</span><br>
+            Banda: <span style="color:#8ee4af;">20m</span> &nbsp; Modo: <span style="color:#8ee4af;">SSB</span><br>
+            Nombre (opcional): <span style="color:#8ee4af;">Marcelo</span><br>
+            Hora: <span style="color:#8ee4af;">se completa sola ✓</span><br><br>
+            <span style="color:#f6ad55;">[ Guardar contacto ]</span> ← un clic y sigue escuchando la banda
+        </div>
+    </div>
+
+    <!-- PLANTILLAS DE DIPLOMA -->
+    <div class="section">
+        <div class="section-header">
+            <h2><i class="fas fa-award"></i> Plantillas de diploma, si las querés usar</h2>
+            <p>Cuando confirmás un match, vos elegís cómo enviar el reconocimiento. Si no tenés tu propio diseño, la QSL App te ofrece plantillas listas para usar.</p>
+        </div>
+        <div class="carpeta-demo" style="max-width:520px; text-align:left;">
+            <span style="color:#ffd966;">🎖️ Plantillas de diploma</span><br><br>
+            <span style="color:#8ee4af;">[ ⬇ Descargar plantillas ]</span> ← las traés cuando las necesites<br><br>
+            Una vez descargadas, quedan guardadas en tu computadora y las volvés a usar sin conexión, las veces que quieras.
+        </div>
+        <p class="nota-modos">Es un paso opcional: el botón "Descargar plantillas" solo se usa si querés apoyarte en nuestros diseños para armar el diploma. Podés elegir entre las variantes disponibles, y la QSL App completa automáticamente los datos del contacto (indicativo, banda, modo, fecha) antes de guardarlo en tu carpeta "Mis Diplomas", listo para que lo adjuntes vos mismo por WhatsApp o mail.</p>
+    </div>
+
+    <!-- MODOS Y REDES SOPORTADAS -->
+    <div class="section">
+        <div class="section-header">
+            <h2><i class="fas fa-satellite-dish"></i> Modos y redes soportadas</h2>
+            <p>Analógico, digital, o híbrido por internet: todo cuenta si genera un registro ADIF válido.</p>
+        </div>
+        <div class="modos-lista">
+            <span class="modo-chip"><i class="fas fa-microphone"></i> SSB / FM / AM</span>
+            <span class="modo-chip"><i class="fas fa-wave-square"></i> CW</span>
+            <span class="modo-chip"><i class="fas fa-signal"></i> FT8 / FT4 / RTTY</span>
+            <span class="modo-chip"><i class="fas fa-broadcast-tower"></i> DMR</span>
+            <span class="modo-chip"><i class="fas fa-mobile-screen"></i> Peanut</span>
+            <span class="modo-chip manual"><i class="fas fa-pen"></i> EchoLink (carga manual)</span>
+            <span class="modo-chip manual"><i class="fas fa-pen"></i> AllStarLink (carga manual)</span>
+        </div>
+        <p class="nota-modos">Peanut exporta su propio ADIF y se sube automático como cualquier otro. Para EchoLink y AllStarLink, cargá el contacto en tu logger habitual indicando el modo correspondiente — una vez que ese archivo aparezca en tu carpeta vigilada, lo tomamos igual que a los demás.</p>
+    </div>
+
+    <!-- COMPATIBILIDAD -->
+    <div class="section">
+        <div class="section-header">
+            <h2><i class="fas fa-desktop"></i> Compatibilidad</h2>
+            <p>Preferimos ser claros sobre lo que hoy podemos garantizar antes que prometer de más.</p>
+        </div>
+        <div class="compat-grid">
+            <div class="compat-card">
+                <i class="fab fa-windows"></i>
+                <h3>Windows 64 bits</h3>
+                <span>Disponible — Windows 10 y 11</span>
+            </div>
+            <div class="compat-card">
+                <i class="fas fa-magnifying-glass"></i>
+                <h3>Windows 32 bits</h3>
+                <span>En evaluación, sujeto a compatibilidad de librerías</span>
+            </div>
+            <div class="compat-card">
+                <i class="fab fa-linux"></i>
+                <h3>Linux</h3>
+                <span>En evaluación, sujeto a compatibilidad de librerías</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRIVACIDAD -->
+    <div class="section">
+        <div class="privacidad-box">
+            <h3><i class="fas fa-shield-halved"></i> ¿Qué hace exactamente con mis archivos?</h3>
+            <p>La QSL App solo lee los archivos .adi/.adif de la carpeta que vos elegiste, extrae los datos del QSO (indicativo, banda, modo, fecha/hora) y los sube a tu cuenta para buscar matches. No accede a ninguna otra carpeta de tu computadora, no modifica tus archivos originales, y no comparte nada con terceros fuera de la lógica de match que ya conocés dentro de la plataforma.</p>
+        </div>
+    </div>
+
+    <!-- CTA FINAL -->
+    <div class="cta-final">
+        <h2>📡 Dejá que la QSL App trabaje por vos</h2>
+        <p>Instalala una vez, seguí operando como siempre, y enterate apenas tengas un match nuevo.</p>
+        <button class="btn-solid"><i class="fas fa-download"></i> Descargar la QSL App ahora</button>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-logos">
+            <img src="statics/ds_sistemas.png" alt="DS Sistemas" onclick="window.open('https://wa.me/5493725432567', '_blank')" style="cursor:pointer;" />
+        </div>
+        <p><strong>DS Sistemas</strong> · Desarrollo de Software · Infraestructura</p>
+        <div class="footer-contact">
+            📧 <a href="mailto:dorgerardo@gmail.com">dorgerardo@gmail.com</a> &nbsp;|&nbsp; 💬 <a href="https://wa.me/5493725432567" target="_blank">+54 9 3725 432567</a>
+        </div>
+        <!-- Comunidad: el Admin carga estos links reales desde su panel cuando estén creados -->
+        <div class="footer-contact" style="margin-top:4px;">
+            <a href="#" target="_blank" title="Próximamente"><i class="fab fa-discord"></i> Discord de la comunidad</a> &nbsp;|&nbsp;
+            <a href="#" target="_blank" title="Próximamente"><i class="fab fa-telegram"></i> Canal de Telegram</a>
+        </div>
+        <p style="margin-top:15px; font-size:0.8rem;">
+            © 2026 DS Sistemas · Todos los derechos reservados &nbsp;|&nbsp;
+            <a href="ayuda.html">Ayuda</a> ·
+            <a href="#">Términos</a> ·
+            <a href="#">Privacidad</a>
+        </p>
+    </footer>
+
+</div>
+
+
+<!-- ========== MODAL INGRESAR / REGISTRARSE ========== -->
+<div class="modal-overlay" id="modalCuenta">
+    <div class="modal-box">
+        <button class="modal-close" id="modalCloseBtn" aria-label="Cerrar"><i class="fas fa-xmark"></i></button>
+        <div class="modal-logo"><i class="fas fa-tower-broadcast"></i> QSL DOR</div>
+        <div class="modal-tabs">
+            <button class="modal-tab" id="tabBtnIngresar" data-tab="ingresar">Ingresar</button>
+            <button class="modal-tab" id="tabBtnRegistro" data-tab="registro">Registrarse</button>
+        </div>
+
+        <!-- PANEL: INGRESAR -->
+        <div class="modal-panel" id="panelIngresar">
+            <form id="formIngresar">
+                <div class="modal-grupo">
+                    <label>Indicativo</label>
+                    <input type="text" placeholder="Ej: LU5REY" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>Contraseña</label>
+                    <input type="password" placeholder="••••••••" required />
+                </div>
+                <div class="modal-olvide"><a href="ayuda.html">¿Olvidaste tu contraseña?</a></div>
+                <button type="submit" class="modal-submit"><i class="fas fa-right-to-bracket"></i> Ingresar</button>
+                <div class="modal-status" id="statusIngresar">Ingreso simulado — acá se conectaría con el backend real.</div>
+            </form>
+        </div>
+
+        <!-- PANEL: REGISTRARSE -->
+        <div class="modal-panel" id="panelRegistro">
+            <form id="formRegistro">
+                <div class="modal-grupo">
+                    <label>Indicativo (será tu usuario)</label>
+                    <input type="text" placeholder="Ej: LU5REY" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>Email</label>
+                    <input type="email" placeholder="tu@mail.com" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>WhatsApp (opcional)</label>
+                    <input type="tel" placeholder="+54 9 ..." />
+                </div>
+                <div class="modal-grupo">
+                    <label>Contraseña</label>
+                    <input type="password" placeholder="••••••••" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>Repetir contraseña</label>
+                    <input type="password" placeholder="••••••••" required />
+                </div>
+                <div class="modal-check">
+                    <input type="checkbox" id="checkConsentimiento" required />
+                    <label for="checkConsentimiento">Acepto que mi mail y WhatsApp se compartan únicamente con usuarios con los que tenga un match confirmado, y acepto los <a href="#">Términos</a> y la <a href="#">Política de Privacidad</a>.</label>
+                </div>
+                <button type="submit" class="modal-submit"><i class="fas fa-user-plus"></i> Crear mi cuenta</button>
+                <div class="modal-status" id="statusRegistro">Registro simulado — acá se conectaría con el backend real.</div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const html = document.documentElement;
+        const toggle = document.getElementById('themeToggle');
+        const temaGuardado = localStorage.getItem('tema') || 'light';
+        html.classList.add(temaGuardado);
+        actualizarIcono(temaGuardado);
+        toggle.addEventListener('click', function() {
+            const esOscuro = html.classList.contains('dark');
+            const nuevoTema = esOscuro ? 'light' : 'dark';
+            html.classList.remove('light', 'dark');
+            html.classList.add(nuevoTema);
+            localStorage.setItem('tema', nuevoTema);
+            actualizarIcono(nuevoTema);
+        });
+        function actualizarIcono(tema) {
+            toggle.textContent = tema === 'dark' ? '☀️' : '🌙';
+        }
+    })();
+
+    // ========== MODAL INGRESAR / REGISTRARSE ==========
+    (function() {
+        const overlay = document.getElementById('modalCuenta');
+        const closeBtn = document.getElementById('modalCloseBtn');
+        const tabIngresar = document.getElementById('tabBtnIngresar');
+        const tabRegistro = document.getElementById('tabBtnRegistro');
+        const panelIngresar = document.getElementById('panelIngresar');
+        const panelRegistro = document.getElementById('panelRegistro');
+
+        function abrirModal(tab) {
+            overlay.classList.add('visible');
+            seleccionarTab(tab);
+        }
+        function cerrarModal() {
+            overlay.classList.remove('visible');
+        }
+        function seleccionarTab(tab) {
+            const esIngresar = tab === 'ingresar';
+            tabIngresar.classList.toggle('active', esIngresar);
+            tabRegistro.classList.toggle('active', !esIngresar);
+            panelIngresar.classList.toggle('active', esIngresar);
+            panelRegistro.classList.toggle('active', !esIngresar);
+        }
+
+        // Abrir modal desde cualquier botón "Ingresar" o "Registrarse" del sitio
+        document.querySelectorAll('button').forEach(btn => {
+            const texto = btn.textContent.trim();
+            if (texto === 'Ingresar') {
+                btn.addEventListener('click', () => abrirModal('ingresar'));
+            } else if (texto === 'Registrarse') {
+                btn.addEventListener('click', () => abrirModal('registro'));
+            }
+        });
+
+        tabIngresar.addEventListener('click', () => seleccionarTab('ingresar'));
+        tabRegistro.addEventListener('click', () => seleccionarTab('registro'));
+        closeBtn.addEventListener('click', cerrarModal);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) cerrarModal(); });
+
+        // Envíos simulados (acá se conectaría con el backend real)
+        document.getElementById('formIngresar').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // TODO backend: POST a /api/auth/login
+            document.getElementById('statusIngresar').classList.add('visible');
+        });
+        document.getElementById('formRegistro').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // TODO backend: POST a /api/auth/registro
+            document.getElementById('statusRegistro').classList.add('visible');
+        });
+    })();
+
+</script>
+
+</body>
+</html>

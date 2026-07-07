@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QSL DOR · Museo de Condecoraciones</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ========== VARIABLES ========== */
+        :root {
+            --bg-body: #f5f7fa;
+            --bg-card: #ffffff;
+            --bg-nav: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --accent: #ffd966;
+            --accent-dark: #e6c35c;
+            --accent-text: #0b1a2f;
+            --card-border: #e2e8f0;
+        }
+
+        html.dark {
+            --bg-body: #0b1a2f;
+            --bg-card: #142b44;
+            --bg-nav: #0f2035;
+            --text-primary: #e0e7f0;
+            --text-secondary: #b0c7db;
+            --text-muted: #8899aa;
+            --border-color: #1e3a5c;
+            --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --accent: #ffd966;
+            --accent-dark: #e6c35c;
+            --accent-text: #0b1a2f;
+            --card-border: #1e3a5c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            padding: 0 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* ========== NAVBAR ========== */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 15px;
+            background: var(--bg-nav);
+            transition: background 0.3s;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .logo img { height: 55px; }
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent); }
+        .nav-links a.active { color: var(--accent); font-weight: 600; }
+
+        #themeToggle {
+            background: none;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--text-primary);
+            background: var(--bg-card);
+        }
+        #themeToggle:hover { border-color: var(--accent); transform: scale(1.05); }
+
+        .btn-outline {
+            border: 2px solid var(--accent);
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: var(--accent) !important;
+            font-weight: 600;
+            transition: 0.2s;
+            background: transparent;
+            cursor: pointer;
+        }
+        .btn-outline:hover {
+            background: var(--accent);
+            color: var(--accent-text) !important;
+        }
+        .btn-solid {
+            background: var(--accent);
+            padding: 8px 24px;
+            border-radius: 30px;
+            color: var(--accent-text) !important;
+            font-weight: 600;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-solid:hover { background: var(--accent-dark); }
+
+        /* ========== HEADER DEL MUSEO ========== */
+        .museo-header {
+            text-align: center;
+            padding: 40px 0 20px;
+        }
+        .museo-header h1 {
+            font-size: 2.8rem;
+            color: var(--text-primary);
+        }
+        .museo-header h1 i { color: var(--accent); margin-right: 12px; }
+        .museo-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 10px auto;
+        }
+
+        /* ========== TABS DEL MUSEO ========== */
+        .museo-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0 30px;
+        }
+        .museo-tabs .tab-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: 0.2s;
+        }
+        .museo-tabs .tab-btn:hover {
+            background: var(--accent);
+            color: var(--accent-text);
+            border-color: var(--accent);
+        }
+        .museo-tabs .tab-btn.active {
+            background: var(--accent);
+            color: var(--accent-text);
+            border-color: var(--accent);
+        }
+
+        /* ========== CONTENEDOR DE MEDALLAS ========== */
+        .museo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        .card-museo {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 16px;
+            border-left: 6px solid var(--accent);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--card-border);
+            transition: 0.2s;
+        }
+        .card-museo:hover { transform: translateY(-4px); }
+        .card-museo .emoji-big {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .card-museo h3 {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+        .card-museo .tipo {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .card-museo .tipo.unitaria {
+            background: #7ec8e3;
+            color: #0b1a2f;
+        }
+        .card-museo .tipo.grupal {
+            background: #bb86fc;
+            color: #0b1a2f;
+        }
+        .card-museo .tipo.especial {
+            background: #ffd966;
+            color: #0b1a2f;
+        }
+        .card-museo .historia {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-style: italic;
+            border-left: 3px solid var(--accent);
+            padding-left: 12px;
+            margin: 12px 0;
+        }
+        .card-museo .requisitos {
+            background: var(--bg-body);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        .card-museo .requisitos strong { color: var(--text-primary); }
+        .card-museo .badge {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--accent-text);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            text-align: center;
+            padding: 40px 0 20px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 30px;
+        }
+        .footer .footer-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 15px;
+        }
+        .footer .footer-logos img { height: 40px; }
+        .footer a { color: var(--text-muted); text-decoration: none; }
+        .footer a:hover { color: var(--accent); }
+        .footer .footer-contact { margin: 10px 0; }
+        .footer .footer-contact a { color: var(--accent); font-weight: 600; }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 700px) {
+            .museo-tabs .tab-btn { padding: 8px 14px; font-size: 0.85rem; }
+            .museo-grid { grid-template-columns: 1fr; }
+        }
+    
+        /* ========== MODAL INGRESAR / REGISTRARSE ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.visible { display: flex; }
+        .modal-box {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+            position: relative;
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-close {
+            position: absolute;
+            top: 16px; right: 18px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-close:hover { color: var(--text-primary); }
+        .modal-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        .modal-tabs {
+            display: flex;
+            background: var(--input-bg, var(--bg-body));
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 22px;
+        }
+        .modal-tab {
+            flex: 1;
+            text-align: center;
+            padding: 9px 0;
+            border-radius: 9px;
+            border: none;
+            background: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-tab.active { background: var(--accent); color: var(--accent-text); }
+        .modal-panel { display: none; }
+        .modal-panel.active { display: block; }
+        .modal-grupo { margin-bottom: 14px; }
+        .modal-grupo label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+        .modal-grupo input {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg, var(--bg-body));
+            color: var(--text-primary);
+            font-size: 0.92rem;
+        }
+        .modal-grupo input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+        .modal-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+        .modal-check input { margin-top: 3px; flex-shrink: 0; }
+        .modal-check a { color: var(--accent-dark); }
+        html.dark .modal-check a { color: var(--accent); }
+        .modal-olvide {
+            text-align: right;
+            margin: -8px 0 18px;
+        }
+        .modal-olvide a {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+        .modal-olvide a:hover { color: var(--accent-dark); }
+        .modal-submit {
+            width: 100%;
+            padding: 13px 0;
+            border-radius: 12px;
+            border: none;
+            background: var(--accent);
+            color: var(--accent-text);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-submit:hover { background: var(--accent-dark); }
+        .modal-status {
+            display: none;
+            margin-top: 14px;
+            padding: 11px 14px;
+            background: var(--success-bg, #d1fae5);
+            color: var(--success-text, #065f46);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .modal-status.visible { display: block; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ========== NAVBAR ========== -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <img src="statics/logo_qsl_dor.png" alt="QSL DOR" />
+            QSL DOR
+        </a>
+        <div class="nav-links">
+            <a href="index.html">🏠 Inicio</a>
+            <a href="panel.html">🗂️ Mi Panel</a>
+            <a href="eventos.html">📅 Eventos</a>
+            <a href="museo.html" class="active">🏛️ Museo</a>
+            <a href="app.html">📲 QSL App</a>
+            <a href="ayuda.html">🆘 Ayuda</a>
+            <button id="themeToggle" aria-label="Cambiar tema">🌙</button>
+            <button class="btn-outline"><i class="fas fa-user"></i> Ingresar</button>
+            <button class="btn-solid"><i class="fas fa-user-plus"></i> Registrarse</button>
+        </div>
+    </nav>
+
+    <!-- ========== HEADER ========== -->
+    <div class="museo-header">
+        <h1><i class="fas fa-landmark"></i> Museo de Condecoraciones</h1>
+        <p>Acá yacen los relatos de los más grandes operadores. Cada medalla es un capítulo en la historia del éter. Todas se otorgan únicamente por contactos <strong>confirmados</strong> (match de ambos lados).</p>
+    </div>
+
+    <!-- ========== TABS ========== -->
+    <div class="museo-tabs" id="museoTabs">
+        <button class="tab-btn active" data-categoria="paises">🌍 Países</button>
+        <button class="tab-btn" data-categoria="provincias">🇦🇷 Provincias</button>
+        <button class="tab-btn" data-categoria="bandas">📡 Bandas</button>
+        <button class="tab-btn" data-categoria="modos">🎤 Modos</button>
+        <button class="tab-btn" data-categoria="hibridas">🔗 Híbridas</button>
+        <button class="tab-btn" data-categoria="horarios">🌙 Horarios</button>
+        <button class="tab-btn" data-categoria="constancia">📅 Constancia</button>
+        <button class="tab-btn" data-categoria="velocidad">⚡ Velocidad</button>
+        <button class="tab-btn" data-categoria="regiones">🏔️ Regiones</button>
+        <button class="tab-btn" data-categoria="grupal">⚔️ Grupales</button>
+        <button class="tab-btn" data-categoria="especiales">🎖️ Especiales</button>
+    </div>
+
+    <!-- ========== CONTENEDOR DE MEDALLAS ========== -->
+    <div id="museoContainer" class="museo-grid">
+        <!-- Las medallas se cargan dinámicamente con JavaScript -->
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="footer">
+        <div class="footer-logos">
+            <img src="statics/ds_sistemas.png" alt="DS Sistemas" onclick="window.open('https://wa.me/5493725432567', '_blank')" style="cursor:pointer;" />
+        </div>
+        <p><strong>DS Sistemas</strong> · Desarrollo de Software · Infraestructura</p>
+        <div class="footer-contact">
+            📧 <a href="mailto:dorgerardo@gmail.com">dorgerardo@gmail.com</a> &nbsp;|&nbsp; 💬 <a href="https://wa.me/5493725432567" target="_blank">+54 9 3725 432567</a>
+        </div>
+        <p style="margin-top:15px; font-size:0.8rem;">
+            © 2026 DS Sistemas · Todos los derechos reservados &nbsp;|&nbsp;
+            <a href="ayuda.html">Ayuda</a> ·
+            <a href="#">Términos</a> ·
+            <a href="#">Privacidad</a>
+        </p>
+    </footer>
+
+</div>
+
+
+<!-- ========== MODAL INGRESAR / REGISTRARSE ========== -->
+<div class="modal-overlay" id="modalCuenta">
+    <div class="modal-box">
+        <button class="modal-close" id="modalCloseBtn" aria-label="Cerrar"><i class="fas fa-xmark"></i></button>
+        <div class="modal-logo"><i class="fas fa-tower-broadcast"></i> QSL DOR</div>
+        <div class="modal-tabs">
+            <button class="modal-tab" id="tabBtnIngresar" data-tab="ingresar">Ingresar</button>
+            <button class="modal-tab" id="tabBtnRegistro" data-tab="registro">Registrarse</button>
+        </div>
+
+        <!-- PANEL: INGRESAR -->
+        <div class="modal-panel" id="panelIngresar">
+            <form id="formIngresar">
+                <div class="modal-grupo">
+                    <label>Indicativo</label>
+                    <input type="text" placeholder="Ej: LU5REY" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>Contraseña</label>
+                    <input type="password" placeholder="••••••••" required />
+                </div>
+                <div class="modal-olvide"><a href="ayuda.html">¿Olvidaste tu contraseña?</a></div>
+                <button type="submit" class="modal-submit"><i class="fas fa-right-to-bracket"></i> Ingresar</button>
+                <div class="modal-status" id="statusIngresar">Ingreso simulado — acá se conectaría con el backend real.</div>
+            </form>
+        </div>
+
+        <!-- PANEL: REGISTRARSE -->
+        <div class="modal-panel" id="panelRegistro">
+            <form id="formRegistro">
+                <div class="modal-grupo">
+                    <label>Indicativo (será tu usuario)</label>
+                    <input type="text" placeholder="Ej: LU5REY" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>Email</label>
+                    <input type="email" placeholder="tu@mail.com" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>WhatsApp (opcional)</label>
+                    <input type="tel" placeholder="+54 9 ..." />
+                </div>
+                <div class="modal-grupo">
+                    <label>Contraseña</label>
+                    <input type="password" placeholder="••••••••" required />
+                </div>
+                <div class="modal-grupo">
+                    <label>Repetir contraseña</label>
+                    <input type="password" placeholder="••••••••" required />
+                </div>
+                <div class="modal-check">
+                    <input type="checkbox" id="checkConsentimiento" required />
+                    <label for="checkConsentimiento">Acepto que mi mail y WhatsApp se compartan únicamente con usuarios con los que tenga un match confirmado, y acepto los <a href="#">Términos</a> y la <a href="#">Política de Privacidad</a>.</label>
+                </div>
+                <button type="submit" class="modal-submit"><i class="fas fa-user-plus"></i> Crear mi cuenta</button>
+                <div class="modal-status" id="statusRegistro">Registro simulado — acá se conectaría con el backend real.</div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== TEMA OSCURO/CLARO ==========
+    (function() {
+        const html = document.documentElement;
+        const toggle = document.getElementById('themeToggle');
+        const temaGuardado = localStorage.getItem('tema') || 'light';
+        html.classList.add(temaGuardado);
+        actualizarIcono(temaGuardado);
+        toggle.addEventListener('click', function() {
+            const esOscuro = html.classList.contains('dark');
+            const nuevoTema = esOscuro ? 'light' : 'dark';
+            html.classList.remove('light', 'dark');
+            html.classList.add(nuevoTema);
+            localStorage.setItem('tema', nuevoTema);
+            actualizarIcono(nuevoTema);
+        });
+        function actualizarIcono(tema) {
+            toggle.textContent = tema === 'dark' ? '☀️' : '🌙';
+        }
+    })();
+
+    // ========== DATOS DE LAS MEDALLAS ==========
+    const medallasData = {
+        paises: [
+            { emoji: '🌍', nombre: 'Viajero', tipo: 'unitaria', nivel: '🥉 Bronce',
+              historia: 'Diez países han escuchado tu voz. Es el primer paso para convertirte en una leyenda del éter.',
+              requisitos: 'Contactar con 10 países diferentes, en cualquier banda y modo.' },
+            { emoji: '🌍', nombre: 'Explorador', tipo: 'unitaria', nivel: '🥈 Plata',
+              historia: 'Veinticinco países ya forman parte de tu historia. Cada contacto es una nueva aventura, un nuevo eco en la inmensidad del mundo.',
+              requisitos: 'Contactar con 25 países diferentes, en cualquier banda y modo.' },
+            { emoji: '🌍', nombre: 'Mundialista', tipo: 'unitaria', nivel: '🥇 Oro',
+              historia: 'Cincuenta países han respondido a tu llamado. Sos un ciudadano del mundo, un embajador de la radioafición sin fronteras.',
+              requisitos: 'Contactar con 50 países diferentes, en cualquier banda y modo.' },
+            { emoji: '🌍', nombre: 'Leyenda DX', tipo: 'unitaria', nivel: '💎 Diamante',
+              historia: 'Cien países han sido testigos de tu destreza. Tu nombre ya es parte de la historia del DX, una leyenda viva en el éter.',
+              requisitos: 'Contactar con 100 países diferentes, en cualquier banda y modo.' },
+            { emoji: '🌍', nombre: 'Conquistador Global', tipo: 'unitaria', nivel: '⭐ Legendario',
+              historia: 'Doscientos países han caído ante tu señal. No hay frontera que te detenga. Sos el dueño del mundo, el amo del éter.',
+              requisitos: 'Contactar con 200 países diferentes, en cualquier banda y modo.' }
+        ],
+        provincias: [
+            { emoji: '🇦🇷', nombre: 'Turista Argentino', tipo: 'unitaria', nivel: '🥉 Bronce',
+              historia: 'Cinco provincias argentinas han escuchado tu voz. Empezaste a recorrer la geografía de tu patria a través de las ondas.',
+              requisitos: 'Contactar con 5 provincias de Argentina, en cualquier banda y modo.' },
+            { emoji: '🇦🇷', nombre: 'Viajero Argentino', tipo: 'unitaria', nivel: '🥈 Plata',
+              historia: 'Has recorrido la geografía argentina a través de las ondas. Desde la Puna hasta la Patagonia, tu señal ha sido testigo de la inmensidad de tu tierra.',
+              requisitos: 'Contactar con 12 provincias de Argentina, en cualquier banda y modo.' },
+            { emoji: '🇦🇷', nombre: 'Nacional Argentino', tipo: 'unitaria', nivel: '🥇 Oro',
+              historia: 'Has llegado a todos los rincones de la Argentina. Tus ondas han cruzado la cordillera, la llanura y el mar. Sos el dueño del éter nacional.',
+              requisitos: 'Contactar con 23 provincias de Argentina, en cualquier banda y modo.' },
+            { emoji: '🇦🇷', nombre: 'Embajador Argentino', tipo: 'unitaria', nivel: '⭐ Legendario',
+              historia: 'No solo has recorrido toda la Argentina, sino que has hecho más de 100 contactos en tu país. Sos el embajador de la radioafición argentina en el mundo.',
+              requisitos: 'Contactar con 23 provincias de Argentina y tener 100 contactos confirmados en el país.' }
+        ],
+        bandas: [
+            { emoji: '📡', nombre: 'Aprendiz de 20m', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 25 contactos confirmados en la banda de 20m.',
+              historia: 'Veinticinco contactos en 20 metros. Empezaste a dominar la banda más popular del mundo.' },
+            { emoji: '📡', nombre: 'Maestro de 20m', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 100 contactos confirmados en la banda de 20m.',
+              historia: 'Cien contactos en 20 metros. Sos un experto en la banda de los DX, donde las grandes ligas se enfrentan.' },
+            { emoji: '📡', nombre: 'Dominador de 20m', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 250 contactos confirmados en la banda de 20m.',
+              historia: 'Doscientos cincuenta contactos en 20 metros. Esta banda es tuya, la dominás como nadie.' },
+            { emoji: '📡', nombre: 'Aprendiz de 40m', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 25 contactos confirmados en la banda de 40m.',
+              historia: 'Veinticinco contactos en 40 metros. Empezaste a explorar la banda de las conversaciones profundas.' },
+            { emoji: '📡', nombre: 'Maestro de 40m', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 100 contactos confirmados en la banda de 40m.',
+              historia: 'Cien contactos en 40 metros. Te has convertido en un experto en la banda de la noche, donde los operadores se reúnen.' },
+            { emoji: '📡', nombre: 'Dominador de 40m', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 250 contactos confirmados en la banda de 40m.',
+              historia: 'Doscientos cincuenta contactos en 40 metros. Sos el rey de la banda, donde tu voz resuena con autoridad.' },
+            { emoji: '📡', nombre: 'Aprendiz de 80m', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 25 contactos confirmados en la banda de 80m.',
+              historia: 'Veinticinco contactos en 80 metros. La banda nocturna por excelencia empieza a conocer tu señal.' },
+            { emoji: '📡', nombre: 'Maestro de 80m', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 100 contactos confirmados en la banda de 80m.',
+              historia: 'Cien contactos en 80 metros. Sos un habitual de las rondas nocturnas de la banda baja.' },
+            { emoji: '📡', nombre: 'Dominador de 80m', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 250 contactos confirmados en la banda de 80m.',
+              historia: 'Doscientos cincuenta contactos en 80 metros. Nadie te gana una ronda nocturna en esta banda.' },
+            { emoji: '📡', nombre: 'Aprendiz de 10m', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 25 contactos confirmados en la banda de 10m.',
+              historia: 'Veinticinco contactos en 10 metros. Empezaste a aprovechar la propagación más caprichosa del espectro.' },
+            { emoji: '📡', nombre: 'Maestro de 10m', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 100 contactos confirmados en la banda de 10m.',
+              historia: 'Cien contactos en 10 metros. Sabés leer la propagación mejor que nadie.' },
+            { emoji: '📡', nombre: 'Dominador de 10m', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 250 contactos confirmados en la banda de 10m.',
+              historia: 'Doscientos cincuenta contactos en 10 metros. Domás al sol y su ciclo como un verdadero maestro.' },
+            { emoji: '📻', nombre: 'Aprendiz de 2m', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 10 contactos confirmados en la banda de 2m.',
+              historia: 'Diez contactos en 2 metros. Empezaste a conocer tu repetidora local como la palma de tu mano.' },
+            { emoji: '📻', nombre: 'Maestro de 2m', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 40 contactos confirmados en la banda de 2m.',
+              historia: 'Cuarenta contactos en 2 metros. Sos una voz conocida en la frecuencia local.' },
+            { emoji: '📻', nombre: 'Dominador de 2m', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 100 contactos confirmados en la banda de 2m.',
+              historia: 'Cien contactos en 2 metros. Tu comunidad local te conoce y te espera en cada ronda.' },
+            { emoji: '📻', nombre: 'Aprendiz de 70cm', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 10 contactos confirmados en la banda de 70cm.',
+              historia: 'Diez contactos en 70 centímetros. Empezaste a moverte en las alturas del UHF.' },
+            { emoji: '📻', nombre: 'Maestro de 70cm', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 40 contactos confirmados en la banda de 70cm.',
+              historia: 'Cuarenta contactos en 70 centímetros. Dominás la banda de las repetidoras de mayor alcance.' },
+            { emoji: '📻', nombre: 'Dominador de 70cm', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 100 contactos confirmados en la banda de 70cm.',
+              historia: 'Cien contactos en 70 centímetros. Sos referencia obligada en UHF.' }
+        ],
+        modos: [
+            { emoji: '🎤', nombre: 'Aprendiz de SSB', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 25 contactos confirmados en modo SSB.',
+              historia: 'Veinticinco contactos en SSB. Empezaste a darle forma a tu voz en el éter.' },
+            { emoji: '🎤', nombre: 'Maestro de SSB', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 100 contactos confirmados en modo SSB.',
+              historia: 'Cien contactos en SSB. Tu voz es clara y potente, te has ganado el respeto de la banda.' },
+            { emoji: '🎤', nombre: 'Rey del SSB', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 250 contactos confirmados en modo SSB.',
+              historia: 'Doscientos cincuenta contactos en SSB. Sos el rey de la voz, nadie te discute en la banda.' },
+            { emoji: '🔑', nombre: 'Aprendiz de CW', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 25 contactos confirmados en modo CW.',
+              historia: 'Veinticinco contactos en código Morse. Empezaste a hablar el lenguaje de los pioneros.' },
+            { emoji: '🔑', nombre: 'Maestro de CW', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 100 contactos confirmados en modo CW.',
+              historia: 'Cien contactos en código Morse. Te has convertido en un experto en el lenguaje del silencio.' },
+            { emoji: '🔑', nombre: 'Rey del CW', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 250 contactos confirmados en modo CW.',
+              historia: 'Doscientos cincuenta contactos en código Morse. Sos un maestro del CW, un verdadero experto en el lenguaje del éter.' },
+            { emoji: '💻', nombre: 'Aprendiz Digital', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 50 contactos confirmados en FT8 o FT4.',
+              historia: 'Cincuenta contactos digitales. Empezaste a dominar el arte silencioso del waterfall.' },
+            { emoji: '💻', nombre: 'Maestro Digital', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 200 contactos confirmados en FT8 o FT4.',
+              historia: 'Doscientos contactos digitales. Tu computadora y tu radio trabajan en perfecta sincronía.' },
+            { emoji: '💻', nombre: 'Rey del Digital', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 500 contactos confirmados en FT8 o FT4.',
+              historia: 'Quinientos contactos digitales. Sos una máquina de hacer QSOs, ni el ruido de la banda te detiene.' },
+            { emoji: '⌨️', nombre: 'Aprendiz de RTTY', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 25 contactos confirmados en modo RTTY.',
+              historia: 'Veinticinco contactos en RTTY. Rescatás la vieja escuela de la telegrafía digital.' },
+            { emoji: '⌨️', nombre: 'Maestro de RTTY', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 100 contactos confirmados en modo RTTY.',
+              historia: 'Cien contactos en RTTY. Pocos mantienen viva esta tradición como vos.' },
+            { emoji: '⌨️', nombre: 'Rey del RTTY', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 250 contactos confirmados en modo RTTY.',
+              historia: 'Doscientos cincuenta contactos en RTTY. Sos un guardián de la tradición digital más antigua.' },
+            { emoji: '📶', nombre: 'Aprendiz de DMR', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 15 contactos confirmados en modo DMR.',
+              historia: 'Quince contactos en DMR. Empezaste a moverte entre talkgroups como pez en el agua.' },
+            { emoji: '📶', nombre: 'Maestro de DMR', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 60 contactos confirmados en modo DMR.',
+              historia: 'Sesenta contactos en DMR. Ya conocés de memoria los talkgroups más activos.' },
+            { emoji: '📶', nombre: 'Rey del DMR', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 150 contactos confirmados en modo DMR.',
+              historia: 'Ciento cincuenta contactos en DMR. La red digital te reconoce como uno de los suyos.' }
+        ],
+        hibridas: [
+            { emoji: '📱', nombre: 'Aprendiz de Peanut', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 15 contactos confirmados vía Peanut.',
+              historia: 'Quince contactos vía Peanut. Encontraste la forma de estar en la red DMR sin salir de tu bolsillo.' },
+            { emoji: '📱', nombre: 'Maestro de Peanut', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 60 contactos confirmados vía Peanut.',
+              historia: 'Sesenta contactos vía Peanut. Tu celular es una radio más en tu arsenal.' },
+            { emoji: '📱', nombre: 'Rey de Peanut', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 150 contactos confirmados vía Peanut.',
+              historia: 'Ciento cincuenta contactos vía Peanut. Sos de los que demuestra que la radioafición no para nunca, ni sin equipo a mano.' },
+            { emoji: '🔊', nombre: 'Aprendiz de EchoLink', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 15 contactos confirmados vía EchoLink.',
+              historia: 'Quince contactos vía EchoLink. Uniste el mundo analógico con internet como nadie.' },
+            { emoji: '🔊', nombre: 'Maestro de EchoLink', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 60 contactos confirmados vía EchoLink.',
+              historia: 'Sesenta contactos vía EchoLink. Sos un nodo viviente entre continentes.' },
+            { emoji: '🔊', nombre: 'Rey de EchoLink', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 150 contactos confirmados vía EchoLink.',
+              historia: 'Ciento cincuenta contactos vía EchoLink. La distancia dejó de ser un problema para vos hace rato.' },
+            { emoji: '🌐', nombre: 'Aprendiz de AllStarLink', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 15 contactos confirmados vía AllStarLink.',
+              historia: 'Quince contactos vía AllStarLink. Empezaste a tejer tu propia red de repetidoras vinculadas.' },
+            { emoji: '🌐', nombre: 'Maestro de AllStarLink', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 60 contactos confirmados vía AllStarLink.',
+              historia: 'Sesenta contactos vía AllStarLink. Tu nodo ya es un punto de encuentro conocido.' },
+            { emoji: '🌐', nombre: 'Rey de AllStarLink', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 150 contactos confirmados vía AllStarLink.',
+              historia: 'Ciento cincuenta contactos vía AllStarLink. Sos referencia en la red de nodos vinculados.' },
+            { emoji: '🔗', nombre: 'Puente entre Mundos', tipo: 'unitaria', nivel: '🥉 Bronce',
+              requisitos: 'Tener al menos 1 contacto confirmado en modo analógico (SSB/FM/AM), 1 en modo digital tradicional (CW/FT8/FT4/RTTY/DMR) y 1 en modo híbrido por internet (Peanut/EchoLink/AllStarLink).',
+              historia: 'Cruzaste la frontera entre lo analógico, lo digital y lo híbrido. Sos la prueba de que en el éter no hay una sola forma de conectar.' },
+            { emoji: '🌉', nombre: 'Maestro de Puentes', tipo: 'unitaria', nivel: '🥈 Plata',
+              requisitos: 'Tener al menos 10 contactos confirmados en cada una de las tres familias: analógica, digital tradicional e híbrida por internet.',
+              historia: 'Diez veces por cada camino. Ya no cruzás la frontera entre mundos, la administrás.' },
+            { emoji: '⚡', nombre: 'Sin Fronteras Técnicas', tipo: 'unitaria', nivel: '⭐ Legendario',
+              requisitos: 'Tener al menos 50 contactos confirmados en cada una de las tres familias: analógica, digital tradicional e híbrida por internet.',
+              historia: 'Ningún medio te resulta ajeno. Analógico, digital o por internet, tu señal encuentra la forma de llegar siempre.' }
+        ],
+        horarios: [
+            { emoji: '🌙', nombre: 'Noctámbulo', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 25 contactos confirmados entre las 00:00 y las 06:00 UTC.',
+              historia: 'Veinticinco contactos entre la medianoche y el amanecer. Sos un vagabundo de la noche, un buscador de señales en la oscuridad.' },
+            { emoji: '🌙', nombre: 'Búho', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 100 contactos confirmados entre las 00:00 y las 06:00 UTC.',
+              historia: 'Cien contactos en la noche. Te has convertido en un habitante de la oscuridad, un experto en las frecuencias nocturnas.' },
+            { emoji: '🌙', nombre: 'Ave Nocturna', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 250 contactos confirmados entre las 00:00 y las 06:00 UTC.',
+              historia: 'Doscientos cincuenta contactos nocturnos. Sos el señor de la noche, dueño del éter cuando el mundo duerme.' },
+            { emoji: '🌙', nombre: 'Señor de la Noche', tipo: 'unitaria', nivel: '⭐ Legendario', requisitos: 'Realizar 500 contactos confirmados entre las 00:00 y las 06:00 UTC.',
+              historia: 'Quinientos contactos en la noche. Sos una leyenda, el que domina la oscuridad y la convierte en su aliada.' },
+            { emoji: '🌅', nombre: 'Madrugador', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 25 contactos confirmados entre las 06:00 y las 08:00 UTC.',
+              historia: 'Veinticinco contactos al amanecer. Sos un pionero, el que despierta antes que el sol para conquistar el éter.' },
+            { emoji: '🌅', nombre: 'Centinela del Alba', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 100 contactos confirmados entre las 06:00 y las 08:00 UTC.',
+              historia: 'Cien contactos al amanecer. Ya nadie se sorprende de encontrarte despierto antes que todos.' },
+            { emoji: '🌅', nombre: 'Guardián del Amanecer', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 250 contactos confirmados entre las 06:00 y las 08:00 UTC.',
+              historia: 'Doscientos cincuenta contactos al amanecer. El sol y vos salen juntos a conquistar la banda.' }
+        ],
+        constancia: [
+            { emoji: '📅', nombre: 'Principiante', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar contactos confirmados durante 7 días consecutivos.',
+              historia: 'Siete días consecutivos de contactos. Empezaste a forjar tu leyenda con constancia y dedicación.' },
+            { emoji: '📅', nombre: 'Dedicado', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar contactos confirmados durante 30 días consecutivos.',
+              historia: 'Treinta días seguidos de contactos. Sos un ejemplo de perseverancia, un verdadero radioaficionado de corazón.' },
+            { emoji: '📅', nombre: 'Veterano', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar contactos confirmados durante 90 días consecutivos.',
+              historia: 'Tres meses de contactos ininterrumpidos. Tu dedicación es digna de los más grandes operadores.' },
+            { emoji: '📅', nombre: 'Leyenda Viva', tipo: 'unitaria', nivel: '⭐ Legendario', requisitos: 'Realizar contactos confirmados durante 365 días consecutivos.',
+              historia: 'Un año entero de contactos diarios. Sos una leyenda viva, un operador que ha hecho de la radio su vida.' }
+        ],
+        velocidad: [
+            { emoji: '⚡', nombre: 'Rápido', tipo: 'unitaria', nivel: '🥉 Bronce', requisitos: 'Realizar 10 contactos confirmados en 1 hora.',
+              historia: 'Diez contactos en una hora. Tu velocidad es tu aliada, tu señal no se detiene.' },
+            { emoji: '⚡', nombre: 'Flash', tipo: 'unitaria', nivel: '🥈 Plata', requisitos: 'Realizar 25 contactos confirmados en 1 hora.',
+              historia: 'Veinticinco contactos en una hora. Sos un relámpago en el éter, una fuerza imparable.' },
+            { emoji: '⚡', nombre: 'Relámpago', tipo: 'unitaria', nivel: '🥇 Oro', requisitos: 'Realizar 50 contactos confirmados en 1 hora.',
+              historia: 'Cincuenta contactos en una hora. Tu velocidad es legendaria, tu señal viaja más rápido que la luz.' },
+            { emoji: '⚡', nombre: 'Dios del Éter', tipo: 'unitaria', nivel: '⭐ Legendario', requisitos: 'Realizar 100 contactos confirmados en 1 hora.',
+              historia: 'Cien contactos en una hora. Sos el dueño de la velocidad, el amo del éter, una fuerza imparable.' }
+        ],
+        regiones: [
+            { emoji: '🏔️', nombre: 'Hermandad Andina', tipo: 'unitaria', nivel: '🥉 Bronce',
+              requisitos: 'Contactar con los 5 países andinos: Colombia, Ecuador, Perú, Bolivia y Chile.',
+              historia: 'Has contactado con cinco países andinos. Tu señal ha cruzado la cordillera más larga del mundo, uniendo pueblos con tus ondas.' },
+            { emoji: '🌎', nombre: 'Unión Centroamericana', tipo: 'unitaria', nivel: '🥈 Plata',
+              requisitos: 'Contactar con 5 países de Centroamérica.',
+              historia: 'Has contactado con cinco países de Centroamérica. Sos un puente entre culturas, un embajador de la radio en el corazón del continente.' },
+            { emoji: '🇦🇷🇺🇾🇧🇷', nombre: 'Abrazo del Plata', tipo: 'unitaria', nivel: '🥇 Oro',
+              requisitos: 'Contactar con Argentina, Uruguay y Brasil.',
+              historia: 'Has contactado con Argentina, Uruguay y Brasil. El Río de la Plata es tu testigo, tu señal une a los pueblos de la cuenca.' },
+            { emoji: '⭐', nombre: 'El Conquistador', tipo: 'unitaria', nivel: '⭐ Legendario',
+              requisitos: 'Contactar con los 21 países hispanohablantes.',
+              historia: 'Has contactado con todos los países hispanohablantes. Sos el guardián del idioma, el que ha unido el mundo a través de sus ondas.' }
+        ],
+        grupal: [
+            { emoji: '👑', nombre: 'La Hermandad del Éter', tipo: 'grupal', nivel: '👑 Grupal',
+              requisitos: 'El clan debe sumar 500 contactos confirmados entre todos sus miembros en un mes calendario.',
+              historia: 'Cuando un clan se une, el éter tiembla. Esta medalla conmemora a aquellos clanes que, con perseverancia y trabajo en equipo, han demostrado que la unión es la verdadera fuerza de la radio.' },
+            { emoji: '⚔️', nombre: 'Los Conquistadores de Banda', tipo: 'grupal', nivel: '⚔️ Grupal',
+              requisitos: 'Al menos 8 de los 10 miembros del clan deben tener desbloqueada individualmente la medalla "Maestro de 20m".',
+              historia: 'La banda es tu campo de batalla, y tus miembros son tus guerreros. Esta medalla se otorga a los clanes que dominan una banda con maestría.' },
+            { emoji: '🏆', nombre: 'El Desafío del Cacique', tipo: 'grupal', nivel: '🏆 Grupal',
+              requisitos: 'Organizar y ejecutar con éxito 3 eventos públicos en un trimestre (validado manualmente por el Admin).',
+              historia: 'El Cacique guía a su pueblo hacia la gloria. Esta medalla honra a los clanes que organizan eventos exitosos y reúnen a la comunidad.' },
+            { emoji: '🌎', nombre: 'La Legión del DX', tipo: 'grupal', nivel: '🌎 Grupal',
+              requisitos: 'El clan debe contactar con 50 países diferentes, contando países únicos entre todos los miembros (no se duplican si dos miembros contactan el mismo país).',
+              historia: 'El clan se convierte en una legión de exploradores. Esta medalla se otorga cuando el clan, como unidad, contacta con países de todo el mundo.' },
+            { emoji: '🌙', nombre: 'La Noche de los Clanes', tipo: 'grupal', nivel: '🌙 Grupal',
+              requisitos: 'Medalla de temporada: se otorga semanalmente al clan con más contactos confirmados entre las 00:00 y las 06:00 UTC esa semana.',
+              historia: 'En la oscuridad, el clan se vuelve más fuerte. Esta medalla se otorga al clan que más contactos nocturnos realiza en una semana.' }
+        ],
+        especiales: [
+            { emoji: '🎖️', nombre: 'Leyenda de QSL DOR', tipo: 'especial', nivel: '🎖️ Especial',
+              requisitos: 'Otorgado por el Admin por hitos únicos (ej. primer usuario en 100 países).',
+              historia: 'Solo los que han marcado un hito histórico en la plataforma pueden alcanzar este reconocimiento. Es el honor más alto que otorga QSL DOR.' },
+            { emoji: '🏅', nombre: 'Pionero del Éter', tipo: 'especial', nivel: '🏅 Especial',
+              requisitos: 'Otorgado por el Admin a los primeros usuarios en alcanzar un hito.',
+              historia: 'Los pioneros son aquellos que abren camino. Esta medalla reconoce a los primeros en lograr un hito importante en la plataforma.' },
+            { emoji: '🤝', nombre: 'Embajador de la Comunidad', tipo: 'especial', nivel: '🤝 Especial',
+              requisitos: 'Otorgado por el Admin por promover activamente la plataforma.',
+              historia: 'Aquellos que promueven la plataforma, ayudan a otros operadores y fortalecen la comunidad son reconocidos como embajadores.' }
+        ]
+    };
+
+    // ========== FUNCIÓN PARA RENDERIZAR MEDALLAS ==========
+    function renderMedallas(categoria) {
+        const container = document.getElementById('museoContainer');
+        const medallas = medallasData[categoria];
+
+        if (!medallas) {
+            container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:40px;">No hay medallas en esta categoría.</p>';
+            return;
+        }
+
+        let html = '';
+        medallas.forEach(m => {
+            const tipoClass = m.tipo === 'unitaria' ? 'unitaria' : m.tipo === 'grupal' ? 'grupal' : 'especial';
+            const tipoLabel = m.tipo === 'unitaria' ? 'Unitaria' : m.tipo === 'grupal' ? 'Grupal' : 'Especial';
+            html += `
+                <div class="card-museo" style="border-left-color: ${m.tipo === 'unitaria' ? '#7ec8e3' : m.tipo === 'grupal' ? '#bb86fc' : '#ffd966'};">
+                    <span class="emoji-big">${m.emoji}</span>
+                    <h3>${m.nombre}</h3>
+                    <span class="tipo ${tipoClass}">${m.nivel} · ${tipoLabel}</span>
+                    <div class="historia">"${m.historia}"</div>
+                    <div class="requisitos"><strong>📋 Requisitos:</strong> ${m.requisitos}</div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    // ========== MANEJAR TABS ==========
+    const tabs = document.querySelectorAll('.tab-btn');
+    let categoriaActual = 'paises';
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            categoriaActual = this.dataset.categoria;
+            renderMedallas(categoriaActual);
+        });
+    });
+
+    // ========== CARGA INICIAL ==========
+    renderMedallas('paises');
+</script>
+
+</body>
+</html>
